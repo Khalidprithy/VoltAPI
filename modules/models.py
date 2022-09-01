@@ -6,6 +6,7 @@ from django.db import models
 
 # Create your models here.
 class BasicModel(models.Model):
+    name = models.CharField(max_length=255)
     idea = models.TextField()
     problemArea = models.TextField()
     currentPlayers = models.TextField()
@@ -16,6 +17,12 @@ class BasicModel(models.Model):
     stage = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     points = models.IntegerField(default=0)
+
+    class Meta:
+        ordering = ['name', '-points']
+
+    def __str__(self) -> str:
+        return self.name
 
 
 class User(models.Model):
@@ -37,7 +44,7 @@ class User(models.Model):
     phone_number = models.CharField(max_length=255)
     college = models.CharField(max_length=255)
     course = models.CharField(max_length=255)
-    yearOfGraduation = models.DateField()
+    yearOfGraduation = models.CharField(max_length=4)
     dob = models.DateField()
     gender = models.CharField(max_length=1, choices=GENDER_CHOICES)
     founder = models.BooleanField(default=False)
@@ -45,35 +52,34 @@ class User(models.Model):
     joined_on = models.DateField(auto_now_add=True)
     basicModel = models.ForeignKey(BasicModel, on_delete=models.SET_NULL, null=True)
 
+    class Meta:
+        ordering = ['first_name', 'last_name']
 
 class StrategyModel(models.Model):
-    baseModel = models.ForeignKey(BasicModel, on_delete=models.CASCADE)
+    basicModel = models.ForeignKey(BasicModel, on_delete=models.CASCADE)
     customer = models.TextField()
     problemArea = models.TextField()
     uses = models.TextField()
 
+    class Meta:
+        ordering = ['basicModel']
 
-class Ups(models.Model):
+class Up(models.Model):
     ups = models.TextField()
     strategyModel = models.ForeignKey(StrategyModel, on_delete=models.CASCADE)
 
 
-class AddCustomers(models.Model):
-    addCustomers = models.TextField()
-    strategyModel = models.ForeignKey(StrategyModel, on_delete=models.CASCADE)
-
-
-class Segments(models.Model):
+class Segment(models.Model):
     segments = models.TextField()
     strategyModel = models.ForeignKey(StrategyModel, on_delete=models.CASCADE)
 
 
-class Partners(models.Model):
+class Partner(models.Model):
     partners = models.TextField()
     strategyModel = models.ForeignKey(StrategyModel, on_delete=models.CASCADE)
 
 
-class Influencers(models.Model):
+class Influencer(models.Model):
     influencers = models.TextField()
     how = models.TextField()
     strategyModel = models.ForeignKey(StrategyModel, on_delete=models.CASCADE)
@@ -89,7 +95,7 @@ class Strategy(models.Model):
         ('M', 'Medium'),
         ('L', 'Low'),
     ]
-    strategyModel = models.ForeignKey(StrategyModel, on_delete=models.CASCADE)
+    strategyModel = models.ForeignKey(StrategyModel, on_delete=models.CASCADE, parent_link=True)
     strategy = models.TextField()
     category = models.CharField(choices=CATEGORY_CHOICES, max_length=1, default='M')
     approxStartDate = models.DateField()
@@ -101,9 +107,11 @@ class Strategy(models.Model):
 
 
 class ResearchModel(models.Model):
-    baseModel = models.ForeignKey(BasicModel, on_delete=models.CASCADE)
+    basicModel = models.ForeignKey(BasicModel, on_delete=models.CASCADE)
     additionalArticles = models.TextField()
 
+    class Meta:
+        ordering = ['basicModel']
 
 class Research(models.Model):
     CATEGORY_CHOICES = [
@@ -121,13 +129,15 @@ class Research(models.Model):
 
 
 class MarketingModel(models.Model):
-    baseModel = models.ForeignKey(BasicModel, on_delete=models.CASCADE)
+    basicModel = models.ForeignKey(BasicModel, on_delete=models.CASCADE)
     LinkedIn = models.TextField()
     Facebook = models.TextField()
     Twitter = models.TextField()
     Instagram = models.TextField()
     Youtube = models.TextField()
 
+    class Meta:
+        ordering = ['basicModel']
 
 class Marketing(models.Model):
     TYPE_CHOICES = [
@@ -161,6 +171,7 @@ class MarketingTask(models.Model):
         ('I', 'Inactive'),
     ]
     marketing = models.ForeignKey(Marketing, on_delete=models.CASCADE)
+    marketingModel = models.ForeignKey(MarketingModel, on_delete=models.CASCADE)
     task = models.TextField()
     taskLeader = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     startDate = models.DateField()
@@ -171,10 +182,12 @@ class MarketingTask(models.Model):
 
 
 class SalesModel(models.Model):
-    baseModel = models.ForeignKey(BasicModel, on_delete=models.CASCADE)
+    basicModel = models.ForeignKey(BasicModel, on_delete=models.CASCADE)
 
+    class Meta:
+        ordering = ['basicModel']
 
-class Sales(models.Model):
+class Sale(models.Model):
     TYPE_CHOICES = [
         ('M', 'Major'),
         ('m', 'Minor'),
@@ -205,7 +218,8 @@ class SalesTask(models.Model):
         ('A', 'Active'),
         ('I', 'Inactive'),
     ]
-    sales = models.ForeignKey(Sales, on_delete=models.CASCADE)
+    sales = models.ForeignKey(Sale, on_delete=models.CASCADE)
+    salesModel = models.ForeignKey(SalesModel, on_delete=models.CASCADE)
     task = models.TextField()
     taskLeader = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     startDate = models.DateField()
