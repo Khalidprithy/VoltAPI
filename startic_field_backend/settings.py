@@ -81,7 +81,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'startic_field',
-        'USER': 'adarsh',
+        'USER': 'root',
         'PASSWORD': 'adar9890',
         'HOST': 'localhost',
     }
