@@ -50,10 +50,14 @@ class User(models.Model):
     founder = models.BooleanField(default=False)
     role = models.CharField(max_length=1, choices=ROLE_CHOICES)
     joined_on = models.DateField(auto_now_add=True)
-    basicModel = models.ForeignKey(BasicModel, on_delete=models.SET_NULL, null=True)
+    basicModel = models.ForeignKey(BasicModel, on_delete=models.SET_NULL, null=True, related_name='users')
 
     class Meta:
         ordering = ['first_name', 'last_name']
+
+    def __str__(self) -> str:
+        return f'{self.first_name + " "+ self.last_name + " (founder)"}' if self.founder else self.first_name + " " + self.last_name
+
 
 class StrategyModel(models.Model):
     basicModel = models.ForeignKey(BasicModel, on_delete=models.CASCADE)
@@ -64,25 +68,41 @@ class StrategyModel(models.Model):
     class Meta:
         ordering = ['basicModel']
 
+    def __str__(self) -> str:
+        return self.basicModel.name + ' Strategy'
+
+
 class Up(models.Model):
     ups = models.TextField()
     strategyModel = models.ForeignKey(StrategyModel, on_delete=models.CASCADE)
+
+    def __str__(self) -> str:
+        return self.strategyModel.basicModel.name + ' Up'
 
 
 class Segment(models.Model):
     segments = models.TextField()
     strategyModel = models.ForeignKey(StrategyModel, on_delete=models.CASCADE)
 
+    def __str__(self) -> str:
+        return self.strategyModel.basicModel.name + ' Segment'
+
 
 class Partner(models.Model):
     partners = models.TextField()
     strategyModel = models.ForeignKey(StrategyModel, on_delete=models.CASCADE)
+
+    def __str__(self) -> str:
+        return self.strategyModel.basicModel.name + ' Partner'
 
 
 class Influencer(models.Model):
     influencers = models.TextField()
     how = models.TextField()
     strategyModel = models.ForeignKey(StrategyModel, on_delete=models.CASCADE)
+
+    def __str__(self) -> str:
+        return self.strategyModel.basicModel.name + ' Influencer'
 
 
 class Strategy(models.Model):
@@ -105,6 +125,9 @@ class Strategy(models.Model):
     description = models.TextField()
     success = models.CharField(choices=SUCCESS_CHOICES, max_length=1, default='M')
 
+    def __str__(self) -> str:
+        return self.strategyModel.basicModel.name + ' Strategy'
+
 
 class ResearchModel(models.Model):
     basicModel = models.ForeignKey(BasicModel, on_delete=models.CASCADE)
@@ -112,6 +135,10 @@ class ResearchModel(models.Model):
 
     class Meta:
         ordering = ['basicModel']
+
+    def __str__(self) -> str:
+        return self.basicModel.name + ' Research'
+
 
 class Research(models.Model):
     CATEGORY_CHOICES = [
@@ -127,6 +154,9 @@ class Research(models.Model):
     conclusion = models.TextField()
     researchArtifacts = models.TextField()
 
+    def __str__(self) -> str:
+        return self.researchTitle
+
 
 class MarketingModel(models.Model):
     basicModel = models.ForeignKey(BasicModel, on_delete=models.CASCADE)
@@ -138,6 +168,10 @@ class MarketingModel(models.Model):
 
     class Meta:
         ordering = ['basicModel']
+
+    def __str__(self) -> str:
+        return self.basicModel.name + ' Marketing'
+
 
 class Marketing(models.Model):
     TYPE_CHOICES = [
@@ -164,6 +198,9 @@ class Marketing(models.Model):
     endDate = models.DateField()
     success = models.CharField(choices=SUCCESS_CHOICES, max_length=1, default='M')
 
+    def __str__(self) -> str:
+        return self.marketingTitle
+
 
 class MarketingTask(models.Model):
     STATUS_CHOICES = [
@@ -180,12 +217,19 @@ class MarketingTask(models.Model):
     description = models.TextField()
     outcome = models.TextField()
 
+    def __str__(self) -> str:
+        return self.marketing.marketingTitle + ' Task'
+
 
 class SalesModel(models.Model):
     basicModel = models.ForeignKey(BasicModel, on_delete=models.CASCADE)
 
     class Meta:
         ordering = ['basicModel']
+
+    def __str__(self) -> str:
+        return self.basicModel.name + ' Sales'
+
 
 class Sale(models.Model):
     TYPE_CHOICES = [
@@ -212,6 +256,9 @@ class Sale(models.Model):
     endDate = models.DateField()
     success = models.CharField(choices=SUCCESS_CHOICES, max_length=1, default='M')
 
+    def __str__(self) -> str:
+        return self.salesTitle
+
 
 class SalesTask(models.Model):
     STATUS_CHOICES = [
@@ -227,3 +274,6 @@ class SalesTask(models.Model):
     status = models.CharField(max_length=1, default='A')
     description = models.TextField()
     outcome = models.TextField()
+
+    def __str__(self) -> str:
+        return self.sales.salesTitle + ' Task'

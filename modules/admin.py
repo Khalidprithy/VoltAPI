@@ -1,7 +1,6 @@
 from django.contrib import admin
 from . import models
 
-
 # Register your models here.
 @admin.register(models.User)
 class UserAdmin(admin.ModelAdmin):
@@ -29,7 +28,7 @@ class MarketingModelInline(admin.StackedInline):
 
 @admin.register(models.BasicModel)
 class BaseModelAdmin(admin.ModelAdmin):
-    list_display = ['name', 'points', 'points_status']
+    list_display = ['name', 'points', 'points_status', 'created_at']
     list_per_page = 15
     inlines = [StrategyModelInline, ResearchModelInline, MarketingModelInline]
     search_fields = ['name__istartswith']
@@ -37,11 +36,11 @@ class BaseModelAdmin(admin.ModelAdmin):
     @admin.display(ordering='points')
     def points_status(self, BasicModel):
         if BasicModel.points < 400:
-            return 'Low 🔴'
+            return '🔴'
         elif BasicModel.points < 700:
-            return 'Ok 🟡'
+            return '🟡'
         else:
-            return 'High 🟢'
+            return '🟢'
 
 
 class StrategyInline(admin.StackedInline):
