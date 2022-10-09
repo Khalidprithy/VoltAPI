@@ -1,14 +1,33 @@
 from django.contrib import admin
+from django.utils.html import format_html
+
 from . import models
+from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
+
 
 # Register your models here.
+
 @admin.register(models.User)
-class UserAdmin(admin.ModelAdmin):
-    list_display = ['first_name', 'last_name', 'basicModel', 'founder']
+class UserAdmin(BaseUserAdmin):
+    add_fieldsets = (
+        (None, {
+            'classes': ('wide',),
+            'fields': ('email', 'username', 'first_name', 'last_name', 'password1', 'password2')
+        }),
+    )
+
+
+@admin.register(models.Profile)
+class ProfileAdmin(admin.ModelAdmin):
+    list_display = ['first_name', 'last_name', 'basicModel', 'founder','thumbnail']
+    readonly_fields = ['thumbnail']
     list_per_page = 15
     search_fields = ['first_name__istartswith', 'last_name__istartswith']
-
     autocomplete_fields = ['basicModel']
+
+    def thumbnail(self, instance):
+        if instance.image:
+            return format_html(f'<img src="{instance.image.url}" width="50" height="50" object-fit:"cover" style="border-radius: 50%;" />')
 
 
 class StrategyModelInline(admin.StackedInline):
@@ -99,6 +118,7 @@ class Marketingline(admin.StackedInline):
 class MarketingTaskline(admin.StackedInline):
     model = models.MarketingTask
     extra = 0
+
 
 @admin.register(models.MarketingModel)
 class MarketingModel(admin.ModelAdmin):

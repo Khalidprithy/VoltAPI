@@ -1,3 +1,5 @@
+from django.contrib import admin
+from django.contrib.auth.models import AbstractUser
 from django.db import models
 
 # Create your models here.
@@ -5,6 +7,13 @@ from django.db import models
 
 
 # Create your models here.
+class User(AbstractUser):
+    email = models.EmailField(unique=True)
+
+    def __str__(self) -> str:
+        return self.first_name + " " + self.last_name
+
+
 class BasicModel(models.Model):
     name = models.CharField(max_length=255)
     idea = models.TextField()
@@ -25,7 +34,7 @@ class BasicModel(models.Model):
         return self.name
 
 
-class User(models.Model):
+class Profile(models.Model):
     GENDER_CHOICES = [
         ('M', 'Male'),
         ('F', 'Female'),
@@ -38,9 +47,6 @@ class User(models.Model):
         ('L', 'Legal & Admin'),
         ('O', 'Operations'),
     ]
-    first_name = models.CharField(max_length=255)
-    last_name = models.CharField(max_length=255)
-    email = models.CharField(max_length=255)
     phone_number = models.CharField(max_length=255)
     college = models.CharField(max_length=255)
     course = models.CharField(max_length=255)
@@ -50,17 +56,30 @@ class User(models.Model):
     founder = models.BooleanField(default=False)
     role = models.CharField(max_length=1, choices=ROLE_CHOICES)
     joined_on = models.DateField(auto_now_add=True)
-    basicModel = models.ForeignKey(BasicModel, on_delete=models.SET_NULL, null=True, related_name='users')
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
+    basicModel = models.ForeignKey(BasicModel, on_delete=models.SET_NULL, null=True, related_name='profile')
+    image = models.ImageField(upload_to='profile/images', default='profile/images/default.png')
 
     class Meta:
-        ordering = ['first_name', 'last_name']
+        ordering = ['user__first_name', 'user__last_name']
+
+    @admin.display(ordering='user__first_name')
+    def first_name(self):
+        return self.user.first_name
+
+    @admin.display(ordering='user__last_name')
+    def last_name(self):
+        return self.user.last_name
+
+    def email(self):
+        return self.user.email
 
     def __str__(self) -> str:
-        return f'{self.first_name + " "+ self.last_name + " (founder)"}' if self.founder else self.first_name + " " + self.last_name
+        return f'{self.first_name() + " " + self.last_name() + " (founder)"}' if self.founder else self.first_name() + " " + self.last_name()
 
 
 class StrategyModel(models.Model):
-    basicModel = models.ForeignKey(BasicModel, on_delete=models.CASCADE)
+    basicModel = models.ForeignKey(BasicModel, unique=True, on_delete=models.CASCADE)
     customer = models.TextField()
     problemArea = models.TextField()
     uses = models.TextField()
@@ -74,15 +93,15 @@ class StrategyModel(models.Model):
 
 class Up(models.Model):
     ups = models.TextField()
-    strategyModel = models.ForeignKey(StrategyModel, on_delete=models.CASCADE)
+    strategyModel = models.ForeignKey(StrategyModel, on_delete=models.CASCADE, related_name='ups')
 
     def __str__(self) -> str:
-        return self.strategyModel.basicModel.name + ' Up'
+        return self.ups
 
 
 class Segment(models.Model):
     segments = models.TextField()
-    strategyModel = models.ForeignKey(StrategyModel, on_delete=models.CASCADE)
+    strategyModel = models.ForeignKey(StrategyModel, on_delete=models.CASCADE, related_name='segments')
 
     def __str__(self) -> str:
         return self.strategyModel.basicModel.name + ' Segment'
@@ -90,7 +109,7 @@ class Segment(models.Model):
 
 class Partner(models.Model):
     partners = models.TextField()
-    strategyModel = models.ForeignKey(StrategyModel, on_delete=models.CASCADE)
+    strategyModel = models.ForeignKey(StrategyModel, on_delete=models.CASCADE, related_name='partners')
 
     def __str__(self) -> str:
         return self.strategyModel.basicModel.name + ' Partner'
@@ -99,7 +118,7 @@ class Partner(models.Model):
 class Influencer(models.Model):
     influencers = models.TextField()
     how = models.TextField()
-    strategyModel = models.ForeignKey(StrategyModel, on_delete=models.CASCADE)
+    strategyModel = models.ForeignKey(StrategyModel, on_delete=models.CASCADE, related_name='influencers')
 
     def __str__(self) -> str:
         return self.strategyModel.basicModel.name + ' Influencer'
@@ -115,23 +134,25 @@ class Strategy(models.Model):
         ('M', 'Medium'),
         ('L', 'Low'),
     ]
-    strategyModel = models.ForeignKey(StrategyModel, on_delete=models.CASCADE, parent_link=True)
+    strategyModel = models.ForeignKey(StrategyModel, on_delete=models.CASCADE, parent_link=True,
+                                      related_name='strategies')
+    strategyTitle = models.CharField(max_length=255)
     strategy = models.TextField()
     category = models.CharField(choices=CATEGORY_CHOICES, max_length=1, default='M')
     approxStartDate = models.DateField()
-    strategyLeader = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    strategyLeader = models.ForeignKey(Profile, on_delete=models.SET_NULL, null=True)
     Customer = models.TextField()
     features = models.TextField()
     description = models.TextField()
     success = models.CharField(choices=SUCCESS_CHOICES, max_length=1, default='M')
 
     def __str__(self) -> str:
-        return self.strategyModel.basicModel.name + ' Strategy'
+        return self.strategyTitle + ' Strategy'
 
 
 class ResearchModel(models.Model):
-    basicModel = models.ForeignKey(BasicModel, on_delete=models.CASCADE)
-    additionalArticles = models.TextField()
+    basicModel = models.ForeignKey(BasicModel, on_delete=models.CASCADE, unique=True)
+    additionalArticles = models.TextField(null=True, blank=True)
 
     class Meta:
         ordering = ['basicModel']
@@ -145,21 +166,21 @@ class Research(models.Model):
         ('P', 'Primary'),
         ('S', 'Secondary'),
     ]
-    researchModel = models.ForeignKey(ResearchModel, on_delete=models.CASCADE)
-    strategy = models.ForeignKey(StrategyModel, on_delete=models.CASCADE)
+    researchModel = models.ForeignKey(ResearchModel, on_delete=models.CASCADE, related_name='researches')
+    strategy = models.ForeignKey(Strategy, on_delete=models.CASCADE)
     researchTitle = models.TextField()
     category = models.CharField(choices=CATEGORY_CHOICES, max_length=1, default='P')
-    researchLeader = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    researchLeader = models.ForeignKey(Profile, on_delete=models.SET_NULL, null=True)
     researchTask = models.TextField()
     conclusion = models.TextField()
-    researchArtifacts = models.TextField()
+    researchArtifacts = models.TextField(null=True, blank=True)
 
     def __str__(self) -> str:
         return self.researchTitle
 
 
 class MarketingModel(models.Model):
-    basicModel = models.ForeignKey(BasicModel, on_delete=models.CASCADE)
+    basicModel = models.ForeignKey(BasicModel, unique=True, on_delete=models.CASCADE)
     LinkedIn = models.TextField()
     Facebook = models.TextField()
     Twitter = models.TextField()
@@ -190,7 +211,7 @@ class Marketing(models.Model):
     marketingModel = models.ForeignKey(MarketingModel, on_delete=models.CASCADE)
     strategy = models.ForeignKey(StrategyModel, on_delete=models.CASCADE)
     marketingTitle = models.TextField()
-    marketingLeader = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    marketingLeader = models.ForeignKey(Profile, on_delete=models.SET_NULL, null=True)
     type = models.CharField(choices=TYPE_CHOICES, max_length=1, default='M')
     status = models.CharField(choices=STATUS_CHOICES, max_length=1, default='A')
     description = models.TextField()
@@ -210,7 +231,7 @@ class MarketingTask(models.Model):
     marketing = models.ForeignKey(Marketing, on_delete=models.CASCADE)
     marketingModel = models.ForeignKey(MarketingModel, on_delete=models.CASCADE)
     task = models.TextField()
-    taskLeader = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    taskLeader = models.ForeignKey(Profile, on_delete=models.SET_NULL, null=True)
     startDate = models.DateField()
     endDate = models.DateField()
     status = models.CharField(max_length=1, default='A')
@@ -222,7 +243,7 @@ class MarketingTask(models.Model):
 
 
 class SalesModel(models.Model):
-    basicModel = models.ForeignKey(BasicModel, on_delete=models.CASCADE)
+    basicModel = models.ForeignKey(BasicModel, unique=True, on_delete=models.CASCADE)
 
     class Meta:
         ordering = ['basicModel']
@@ -248,7 +269,7 @@ class Sale(models.Model):
     salesModel = models.ForeignKey(SalesModel, on_delete=models.CASCADE)
     strategy = models.ForeignKey(StrategyModel, on_delete=models.CASCADE)
     salesTitle = models.TextField()
-    salesLeader = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    salesLeader = models.ForeignKey(Profile, on_delete=models.SET_NULL, null=True)
     type = models.CharField(choices=TYPE_CHOICES, max_length=1, default='M')
     status = models.CharField(choices=STATUS_CHOICES, max_length=1, default='A')
     description = models.TextField()
@@ -268,7 +289,7 @@ class SalesTask(models.Model):
     sales = models.ForeignKey(Sale, on_delete=models.CASCADE)
     salesModel = models.ForeignKey(SalesModel, on_delete=models.CASCADE)
     task = models.TextField()
-    taskLeader = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    taskLeader = models.ForeignKey(Profile, on_delete=models.SET_NULL, null=True)
     startDate = models.DateField()
     endDate = models.DateField()
     status = models.CharField(max_length=1, default='A')

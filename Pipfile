@@ -7,6 +7,12 @@ name = "pypi"
 mysqlclient = "*"
 djangorestframework = "*"
 django = "*"
+drf-nested-routers = "*"
+django-jazzmin = "*"
+djoser = "*"
+djangorestframework-simplejwt = "*"
+pillow = "*"
+django-cors-headers = "*"
 
 [dev-packages]
 
