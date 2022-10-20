@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-=wnz&x%n#xkke!(46(_@(3ixi2qunt^l$b-u*a8nw2qo!p=mbg
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 
 # Application definition
 
@@ -90,8 +90,8 @@ DATABASES = {
 }
 
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:8080",
-    "http://127.0.0.1:9000",
+    "http://localhost:3000",
+    "http://127.0.0.1:3000"
 ]
 
 # Password validation
@@ -159,9 +159,10 @@ REST_FRAMEWORK = {
 }
 
 SIMPLE_JWT = {
-    'AUTH_HEADER_TYPES': ('JWT',),
-    'ACCESS_TOKEN_LIFETIME': timedelta(days=1),
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=30),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+    'AUTH_HEADER_TYPES': ('Bearer',),
+    'AUTH_TOKEN_CLASSES': ('rest_framework_simplejwt.tokens.AccessToken',),
 }
 
 AUTH_USER_MODEL = 'modules.User'
