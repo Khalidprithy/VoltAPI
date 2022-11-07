@@ -41,7 +41,11 @@ INSTALLED_APPS = [
     'rest_framework',
     'corsheaders',
     'djoser',
-    'modules',
+    'marketing',
+    'research',
+    'sales',
+    'strategy',
+    'backend',
 ]
 
 MIDDLEWARE = [
@@ -81,13 +85,20 @@ WSGI_APPLICATION = 'startic_field_backend.wsgi.application'
 
 DATABASES = {
     'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
+}
+
+"""DATABASES = {
+    'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'startic_field',
         'USER': 'root',
         'PASSWORD': 'adar9890',
         'HOST': 'localhost',
     }
-}
+}"""
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
@@ -165,11 +176,9 @@ SIMPLE_JWT = {
     'AUTH_TOKEN_CLASSES': ('rest_framework_simplejwt.tokens.AccessToken',),
 }
 
-AUTH_USER_MODEL = 'modules.User'
-
 DJOSER = {
     'SERIALIZERS': {
-        'user_create': 'modules.serializers.UserCreateSerializer',
-        'current_user': 'modules.serializers.UserSerializer',
+        'user_create': 'backend.serializers.UserCreateSerializer',
+        'current_user': 'backend.serializers.UserSerializer',
     },
 }
