@@ -20,7 +20,13 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('modules/', include('modules.urls')),
+
+    path('backend/', include('backend.urls')),
+    path('strategy/', include('strategy.urls')),
+    path('research/', include('research.urls')),
+    path('marketing/', include('marketing.urls')),
+    path('sales/', include('sales.urls')),
+
     path('auth/', include('djoser.urls')),
     path('auth/', include('djoser.urls.jwt')),
 ]
