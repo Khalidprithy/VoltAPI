@@ -7,14 +7,16 @@ from django.db import models
 
 class Startup(models.Model):
     name = models.CharField(max_length=255)
+    founded = models.DateField(auto_now=False, auto_now_add=False, null=True)
     idea = models.TextField()
     problemArea = models.TextField()
     currentPlayers = models.TextField()
     difference = models.TextField()
     customer = models.TextField()
-    revenueQuestion = models.TextField()
-    revenueAnswer = models.TextField()
+    revenue1 = models.TextField()
+    revenue2 = models.TextField(null=True)
     stage = models.TextField()
+    market = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     points = models.IntegerField(default=0)
 
@@ -23,7 +25,6 @@ class Startup(models.Model):
 
     def __str__(self) -> str:
         return self.name
-
 
 class Profile(models.Model):
     GENDER_CHOICES = [
