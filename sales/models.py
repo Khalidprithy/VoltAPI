@@ -32,7 +32,7 @@ class Sale(models.Model):
         ('L', 'Low'),
     ]
     salesModel = models.ForeignKey(SalesModule, on_delete=models.CASCADE)
-    strategy = models.ForeignKey(StrategyModule, on_delete=models.CASCADE)
+    strategy = models.ForeignKey(Strategy, on_delete=models.CASCADE)
     salesTitle = models.TextField()
     salesLeader = models.ForeignKey(Profile, on_delete=models.SET_NULL, null=True)
     type = models.CharField(choices=TYPE_CHOICES, max_length=1, default='M')

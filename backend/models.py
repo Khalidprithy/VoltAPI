@@ -19,6 +19,7 @@ class Startup(models.Model):
     market = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     points = models.IntegerField(default=0)
+    people = models.ManyToManyField(User, verbose_name="people", null=True, blank=True)
 
     class Meta:
         ordering = ['name', '-points']

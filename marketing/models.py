@@ -38,7 +38,7 @@ class Marketing(models.Model):
         ('L', 'Low'),
     ]
     marketingModule = models.ForeignKey(MarketingModule, on_delete=models.CASCADE)
-    strategy = models.ForeignKey(StrategyModule, on_delete=models.CASCADE)
+    strategy = models.ForeignKey(Strategy, on_delete=models.CASCADE)
     marketingTitle = models.TextField()
     marketingLeader = models.ForeignKey(Profile, on_delete=models.SET_NULL, null=True)
     type = models.CharField(choices=TYPE_CHOICES, max_length=1, default='M')
