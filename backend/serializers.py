@@ -36,8 +36,7 @@ class StartupSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Startup
-        fields = ['id', 'name', 'idea', 'problemArea', 'currentPlayers', 'difference', 'customer', 'revenueQuestion',
-                  'revenueAnswer', 'stage', 'created_at', 'points', 'profile']
+        fields = "__all__"
 
 
 class PublicStartupSerializer(serializers.ModelSerializer):
@@ -45,7 +44,7 @@ class PublicStartupSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Startup
-        fields = ['id', 'name', 'created_at', 'points', 'profile']
+        fields = ['id', 'name', 'created_at', 'points', 'idea', 'founded', 'website', 'registered', 'market']
 
 
 class UpSerializer(serializers.ModelSerializer):

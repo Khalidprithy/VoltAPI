@@ -11,7 +11,7 @@ class StrategySerializer(serializers.ModelSerializer):
                   'description', 'success']
 
 
-class StrategyModelSerializer(serializers.ModelSerializer):
+class StrategyModuleSerializer(serializers.ModelSerializer):
     class Meta:
         model = StrategyModule
         fields = ['id', 'customer', 'problemArea', 'uses']

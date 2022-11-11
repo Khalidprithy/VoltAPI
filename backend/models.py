@@ -7,23 +7,28 @@ from django.db import models
 
 class Startup(models.Model):
     name = models.CharField(max_length=255)
+    founded = models.DateField(auto_now=False, auto_now_add=False, null=True)
     idea = models.TextField()
     problemArea = models.TextField()
     currentPlayers = models.TextField()
     difference = models.TextField()
     customer = models.TextField()
-    revenueQuestion = models.TextField()
-    revenueAnswer = models.TextField()
+    revenue1 = models.TextField()
+    revenue2 = models.TextField(null=True)
     stage = models.TextField()
+    market = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     points = models.IntegerField(default=0)
+    people = models.ManyToManyField(User, related_name="people", blank=True)
+    website = models.URLField(null=True, max_length=200)
+    registered = models.BooleanField(default=False)
+    mobs = models.ManyToManyField(User, related_name="mobs")
 
     class Meta:
         ordering = ['name', '-points']
 
     def __str__(self) -> str:
         return self.name
-
 
 class Profile(models.Model):
     GENDER_CHOICES = [
@@ -102,3 +107,21 @@ class Influencer(models.Model):
         return self.startup.startup.name + ' Influencer'
 
 
+class Meetup(models.Model):
+    IMP_CHOICES = [
+        ('I', 'Important'),
+        ('D', 'Discussion'),
+        ('N', 'Normal'),
+        ('D', 'Daily'),
+        ('O', 'Optional'),
+    ]
+    title = models.CharField(null=False, max_length=50)
+    desc = models.TextField()
+    link = models.URLField(null=False, max_length=200)
+    date_time = models.DateTimeField(auto_now=False, auto_now_add=False)
+    instant = models.BooleanField(default=False)
+    mobs_only = models.BooleanField(default=False)
+    importance = models.CharField(null=False, max_length=50, choices=IMP_CHOICES)
+
+    def __str__(self) -> str:
+        return self.startup + ' meetup for ' + self.importance + self.title

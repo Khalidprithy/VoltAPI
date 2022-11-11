@@ -9,9 +9,6 @@ from strategy.models import *
 
 class StrategyModule(models.Model):
     startup = models.OneToOneField(Startup, on_delete=models.CASCADE)
-    customer = models.TextField()
-    problemArea = models.TextField()
-    uses = models.TextField()
 
     class Meta:
         ordering = ['startup']
@@ -36,10 +33,11 @@ class Strategy(models.Model):
     category = models.CharField(choices=CATEGORY_CHOICES, max_length=1, default='M')
     approxStartDate = models.DateField()
     strategyLeader = models.ForeignKey(Profile, on_delete=models.SET_NULL, null=True)
-    Customer = models.TextField()
+    customer = models.TextField()
     features = models.TextField()
-    description = models.TextField()
     success = models.CharField(choices=SUCCESS_CHOICES, max_length=1, default='M')
+    problemArea = models.TextField()
+    uses = models.TextField()
 
     def __str__(self) -> str:
         return self.strategyTitle + ' Strategy'

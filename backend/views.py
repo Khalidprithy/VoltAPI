@@ -5,7 +5,20 @@ from rest_framework.filters import SearchFilter
 from rest_framework.decorators import action
 from .models import *
 from .serializers import *
+from rest_framework.views import APIView
+import random
+import requests
+from django.conf import settings
+from django.core.mail import send_mail
+from django.contrib.auth.models import User
+import json
+import datetime
 
+from marketing.models import *
+from strategy.models import *
+from research.models import *
+from sales.models import *
+from product.models import *
 
 # Create your views here.
 class StartupViewSet(CreateModelMixin, UpdateModelMixin, GenericViewSet):
@@ -63,3 +76,50 @@ class PublicProfileViewSet(ModelViewSet):
 
     def get_serializer_context(self):
         return {'request': self.request}
+
+
+class CreateStartupView(APIView):
+    def post(self, request, format=None):
+        data = request.data
+        user = User.objects.get(username=username)
+        startup = Startup.objects.create(
+            name=data.get("name"),
+            founded=data.get("founded"),
+            idea=data.get("idea"),
+            problemArea=data.get("problemArea"),
+            currentPlayers=data.get("currentPlayers"),
+            difference=data.get("difference"),
+            customer=data.get("customer"),
+            revenue1=data.get("revenue1"),
+            revenue2=data.get("revenue2"),
+            stage=data.get("stage"),
+            market=data.get("market"),
+        )
+        startup.people.add(user)
+        # configuring the modules 
+        StrategyModule.objects.create(startup=startup)
+        MarketingModule.objects.create(startup=startup)
+        ResearchModule.objects.create(startup=startup)
+        SalesModule.objects.create(startup=startup)
+        ProductModule.objects.create(startup=startup)
+
+        emails = data.get('emails').split(',')
+        # send_invite_mails(emails)
+        # send_join_mail(user.email)
+
+        return Response({"message": "done"})
+
+class GetStartupsView(APIView):
+    def get(self, request, format=None):
+        username = request.GET.get('username')
+        user = User.objects.get(username=username)
+        your_startups = Startup.objects.filter(people=user)
+        all_startups = Startup.objects.all().exclude(people=user)
+        your_startups_data = PublicStartupSerializer(your_startups, many=True).data
+        all_startups_data = PublicStartupSerializer(all_startups, many=True).data
+
+        payload = {
+            'your_startups': your_startups_data,
+            'all_startups': all_startups_data
+        }
+        return Response(payload, status=status.HTTP_200_OK)
