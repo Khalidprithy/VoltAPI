@@ -52,3 +52,16 @@ class ProductDesign(models.Model):
 
     def __str__(self) -> str:
         return self.subname + " for " + self.product.name + ("Final" if self.final else "")
+
+class ProductFeature(models.Model):
+    title = models.CharField(max_length=50)
+    desc = models.TextField()
+    assigned_to = models.ForeignKey(User, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    completed = models.BooleanField(default=False)
+    deadline = models.DateField(auto_now=False, auto_now_add=False)
+
+    def __str__(self):
+        return self.title + self.title
+    
+

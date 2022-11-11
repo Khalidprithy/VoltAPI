@@ -108,3 +108,18 @@ class CreateStartupView(APIView):
         # send_join_mail(user.email)
 
         return Response({"message": "done"})
+
+class GetStartupsView(APIView):
+    def get(self, request, format=None):
+        username = request.GET.get('username')
+        user = User.objects.get(username=username)
+        your_startups = Startup.objects.filter(people=user)
+        all_startups = Startup.objects.all().exclude(people=user)
+        your_startups_data = PublicStartupSerializer(your_startups, many=True).data
+        all_startups_data = PublicStartupSerializer(all_startups, many=True).data
+
+        payload = {
+            'your_startups': your_startups_data,
+            'all_startups': all_startups_data
+        }
+        return Response(payload, status=status.HTTP_200_OK)
