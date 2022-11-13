@@ -31,7 +31,7 @@ class Sale(models.Model):
         ('M', 'Medium'),
         ('L', 'Low'),
     ]
-    salesModel = models.ForeignKey(SalesModule, on_delete=models.CASCADE)
+    salesModule = models.ForeignKey(SalesModule, on_delete=models.CASCADE)
     strategy = models.ForeignKey(Strategy, on_delete=models.CASCADE)
     salesTitle = models.TextField()
     salesLeader = models.ForeignKey(Profile, on_delete=models.SET_NULL, null=True)
@@ -52,7 +52,7 @@ class SalesTask(models.Model):
         ('I', 'Inactive'),
     ]
     sales = models.ForeignKey(Sale, on_delete=models.CASCADE)
-    salesModel = models.ForeignKey(SalesModule, on_delete=models.CASCADE)
+    salesModule = models.ForeignKey(SalesModule, on_delete=models.CASCADE)
     task = models.TextField()
     taskLeader = models.ForeignKey(Profile, on_delete=models.SET_NULL, null=True)
     startDate = models.DateField()
