@@ -81,7 +81,7 @@ class PublicProfileViewSet(ModelViewSet):
 class CreateStartupView(APIView):
     def post(self, request, format=None):
         data = request.data
-        user = User.objects.get(username=username)
+        user = User.objects.get(username=data.get("username"))
         startup = Startup.objects.create(
             name=data.get("name"),
             founded=data.get("founded"),
@@ -94,8 +94,13 @@ class CreateStartupView(APIView):
             revenue2=data.get("revenue2"),
             stage=data.get("stage"),
             market=data.get("market"),
+            website=data.get("website"),
+            registered=data.get("registered")
         )
-        startup.people.add(user)
+        if data.get("is_founder"):
+            startup.mobs.add(user)
+        else :
+            startup.people.add(user)
         # configuring the modules 
         StrategyModule.objects.create(startup=startup)
         MarketingModule.objects.create(startup=startup)
@@ -107,7 +112,7 @@ class CreateStartupView(APIView):
         # send_invite_mails(emails)
         # send_join_mail(user.email)
 
-        return Response({"message": "done"})
+        return Response({"message": "done"}, status=status.HTTP_201_CREATED)
 
 class GetStartupsView(APIView):
     def get(self, request, format=None):
