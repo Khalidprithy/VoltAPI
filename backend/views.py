@@ -13,6 +13,7 @@ from django.core.mail import send_mail
 from django.contrib.auth.models import User
 import json
 import datetime
+from rest_framework import status
 
 from marketing.models import *
 from strategy.models import *
@@ -81,7 +82,8 @@ class PublicProfileViewSet(ModelViewSet):
 class CreateStartupView(APIView):
     def post(self, request, format=None):
         data = request.data
-        user = User.objects.get(username=data.get("username"))
+        username = data.get('username')
+        user = User.objects.get(username=username)
         startup = Startup.objects.create(
             name=data.get("name"),
             founded=data.get("founded"),
