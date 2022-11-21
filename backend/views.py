@@ -130,3 +130,14 @@ class GetStartupsView(APIView):
             'all_startups': all_startups_data
         }
         return Response(payload, status=status.HTTP_200_OK)
+
+class GetStartupView(APIView):
+    def get(self, request, format=None):
+        username = request.GET.get('username')
+        user = User.objects.get(username=username)
+        startup_key = models.request.GET.get("startup_key")
+        startup = Startup.objects.filter(people=user, key=startup_key)
+        if startup.exists():
+            startup = startup.first()
+            return Response(StartupSerializer(startup).data, status=status.HTTP_200_OK)
+        return Response({"message": "not found!"}, staus=status.HTTP_404_NOT_FOUND)

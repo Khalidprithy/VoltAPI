@@ -3,9 +3,18 @@ from django.contrib.auth.models import AbstractUser, User
 from django.db import models
 
 # Create your models here.
+def generate_key():
+    length=10
+    base = string.ascii_letters+string.digits
+    while True:
+        key = ''.join(random.choices(base,k=length))
+        if not Startup.objects.filter(key=key).exists():
+          break  
+    return key
 
 
 class Startup(models.Model):
+    key = models.SlugField(editable=False, default=generate_key)
     name = models.CharField(max_length=255)
     founded = models.DateField(auto_now=False, auto_now_add=False, null=True)
     idea = models.TextField()

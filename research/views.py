@@ -11,9 +11,9 @@ class CreateResearchView(APIView):
         data = request.data
         startup = request.GET.get('startup')
         researchModule = ResearchModule.objects.get(startup=startup)
+        strategy = Strategy.objects.get(strategyTitle=data.get("strategyTitle"))
         research = Research.objects.create(
-            CATEGORY_CHOICES = data.get("CATEGORY_CHOICES"),
-            strategy = data.get("strategy"),
+            strategy = strategy,
             researchTitle = data.get("researchTitle"),
             category = data.get("category"),
             researchLeader = data.get("researchLeader"),
