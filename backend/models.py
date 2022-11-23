@@ -2,6 +2,8 @@ from django.contrib import admin
 from django.contrib.auth.models import AbstractUser, User
 from django.db import models
 
+import string
+import random
 # Create your models here.
 def generate_key():
     length=10

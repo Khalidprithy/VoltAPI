@@ -4,11 +4,15 @@ from django.db import models
 
 from backend.models import Startup, Profile
 from strategy.models import *
+import string
+import random
 # Create your models here.
 
 
 class SalesModule(models.Model):
     startup = models.OneToOneField(Startup, on_delete=models.CASCADE)
+    head = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
+    volts = models.IntegerField(default=0)
     
     class Meta:
         ordering = ['startup']

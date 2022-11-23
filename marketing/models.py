@@ -4,17 +4,16 @@ from django.db import models
 
 from backend.models import Startup, Profile
 from strategy.models import *
+import string
+import random
 # Create your models here.
 
 
 
 class MarketingModule(models.Model):
     startup = models.ForeignKey(Startup, on_delete=models.CASCADE)
-    LinkedIn = models.TextField()
-    Facebook = models.TextField()
-    Twitter = models.TextField()
-    Instagram = models.TextField()
-    Youtube = models.TextField()
+    head = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
+    volts = models.IntegerField(default=0)
 
     class Meta:
         ordering = ['startup']
@@ -22,7 +21,7 @@ class MarketingModule(models.Model):
     def __str__(self) -> str:
         return self.startup.name + ' Marketing'
 
-class Social(models.Model):
+class Platform(models.Model):
     SOCIAL_CHOICES = [
         ('L', 'LinkedIn'),
         ('B', 'Blogs'),
@@ -34,8 +33,8 @@ class Social(models.Model):
         ('O', 'Offline')
     ]
     marketing = models.ForeignKey(MarketingModule, on_delete=models.CASCADE)
-    social = models.CharField(choices=SOCIAL_CHOICES, max_length=50)
-    manager = models.ForeignKey(User, on_delete=models.SET_NULL)
+    media = models.CharField(choices=SOCIAL_CHOICES, max_length=50)
+    manager = models.ForeignKey(User, on_delete=models.DO_NOTHING)
     org_social_link = models.URLField(null=True, max_length=200)
     configured = models.BooleanField(default=False)
 
@@ -71,25 +70,23 @@ class Marketing(models.Model):
     description = models.TextField()
     startDate = models.DateField()
     endDate = models.DateField()
-    success = models.CharField(choices=SUCCESS_CHOICES, max_length=1, default='M')
 
     def __str__(self) -> str:
         return self.marketingTitle
 
 
-class MarketingTask(models.Model):
+class Social(models.Model):
     STATUS_CHOICES = [
-        ('A', 'Active'),
+        ('', 'Active'),
         ('I', 'Inactive'),
     ]
+    platform = models.ForeignKey(Platform, on_delete=models.CASCADE)
     marketing = models.ForeignKey(Marketing, on_delete=models.CASCADE)
-    task = models.TextField()
-    taskLeader = models.ForeignKey(Profile, on_delete=models.SET_NULL, null=True)
-    startDate = models.DateField()
-    endDate = models.DateField()
-    status = models.CharField(max_length=1, default='A')
-    description = models.TextField()
-    outcome = models.TextField()
+    completed = models.BooleanField(default=False)
+    low = models.CharField(max_length=50)
+    mid = models.CharField(max_length=50)
+    high = models.CharField(max_length=50)
+    points_alloted = models.IntegerField(default=5)
     points = models.IntegerField(default=5)
 
     def __str__(self) -> str:

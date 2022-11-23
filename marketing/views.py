@@ -27,7 +27,7 @@ class CreateMarketingView(APIView):
         )
         return Response({"message": "done"})
 
-class GetMarketingView(APIView):
+class GetMarketingStrategiesView(APIView):
     def get(self, request, format=None):
         startup_key = data.get('startup_key')
         startup = Startup.objects.get(key=startup_key)
@@ -38,3 +38,18 @@ class GetMarketingView(APIView):
             'strategies': your_marketing_data
         }
         return Response(payload, status=status.HTTP_200_OK)
+
+class GetMarketingStrategyView(APIView):
+    def get(self, request, format=None):
+        slug = request.GET.get("slug")
+        marketing = Marketing.objects.filter(slug=slug)
+        if marketing.exists():
+            marketing = marketing.first()
+            linkedin, instagram, youtube = dict()
+            payload = {
+                "details": details,
+                "linkedin": linkedin,
+                "instagram": instagram,
+                "youtube": youtube
+            }
+            

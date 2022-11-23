@@ -139,5 +139,22 @@ class GetStartupView(APIView):
         startup = Startup.objects.filter(people=user, key=startup_key)
         if startup.exists():
             startup = startup.first()
-            return Response(StartupSerializer(startup).data, status=status.HTTP_200_OK)
+            MarketingVolts = MarketingModule.objects.get(startup=startup).volts
+            StrategyVolts = StrategyModule.objects.get(startup=startup).volts
+            ResearchVolts = ResearchModule.objects.get(startup=startup).volts
+            ProductVolts = ProductModule.objects.get(startup=startup).volts
+            SalesVolts = SalesModule.objects.get(startup=startup).volts
+            total_points = MarketingVolts+SalesVolts+ResearchVolts+ProductVolts+StrategyVolts
+            stats = {
+                "strategy": StrategyVolts/total_points*100,
+                "marketing": MarketingVolts/total_points*100,
+                "sales": SalesVolts/total_points*100,
+                "product": ProductVolts/total_points*100,
+                "research": StrategyVolts/total_points*100,
+            }
+            payload = {
+                "details": StartupSerializer(startup).data,
+                "stats": stats,
+            }
+            return Response(payload, status=status.HTTP_200_OK)
         return Response({"message": "not found!"}, staus=status.HTTP_404_NOT_FOUND)

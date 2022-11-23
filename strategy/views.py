@@ -55,10 +55,8 @@ class GetStrategiesView(APIView):
 
 class GetStrategyView(APIView):
     def get(self, request, format=None):
-        startup_key = models.request.GET.get("startup_key")
-        startup = Startup.objects.get(people=user, key=startup_key)
-        strategy_module = StrategyModule.objects.get(startup=startup)
-        strategy = Strategy.objects.filter(strategyModule=strategy_module)
+        slug = request.GET.get("slug")
+        strategy = Strategy.objects.filter(slug=slug)
         if strategy.exists():
             strategy = strategy.first()
             marketing_sub = Marketing.objects.filter(strategy=strategy)

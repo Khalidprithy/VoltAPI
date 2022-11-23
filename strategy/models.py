@@ -5,11 +5,16 @@ from django.contrib.auth.models import AbstractUser, User
 from backend.models import Startup, Profile
 from strategy.models import *
 from django.utils.text import slugify
+
+import string
+import random
 # Create your models here.
 
 
 class StrategyModule(models.Model):
     startup = models.OneToOneField(Startup, on_delete=models.CASCADE)
+    head = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
+    volts = models.IntegerField(default=0)
 
     class Meta:
         ordering = ['startup']
@@ -40,7 +45,7 @@ class Strategy(models.Model):
     strategyModule = models.ForeignKey(StrategyModule, on_delete=models.CASCADE, parent_link=True,
                                       related_name='strategies')
     strategyTitle = models.CharField(max_length=255)
-    strategy = models.TextField()
+    strategy = models.TextField(null=True)
     category = models.CharField(choices=CATEGORY_CHOICES, max_length=1, default='M')
     approxStartDate = models.DateField()
     strategyLeader = models.ForeignKey(Profile, on_delete=models.SET_NULL, null=True)
@@ -48,7 +53,7 @@ class Strategy(models.Model):
     features = models.TextField()
     success = models.CharField(choices=SUCCESS_CHOICES, max_length=1, default='L')
     problemArea = models.TextField()
-    uses = models.TextField()
+    uses = models.TextField(null=True)
     points = models.IntegerField(default=10)
 
     def __str__(self) -> str:

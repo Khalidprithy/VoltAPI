@@ -16,7 +16,12 @@ class MarketingSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class MarketingTaskSerializer(serializers.ModelSerializer):
+class PlatformSerializer(serializers.ModelSerializer):
     class Meta:
-        model = MarketingTask
+        model = Platform
+        fields = "__all__"
+
+class SocialSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Social
         fields = "__all__"
