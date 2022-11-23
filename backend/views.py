@@ -96,8 +96,13 @@ class CreateStartupView(APIView):
             revenue2=data.get("revenue2"),
             stage=data.get("stage"),
             market=data.get("market"),
+            website=data.get("website"),
+            registered=data.get("registered")
         )
-        startup.people.add(user)
+        if data.get("is_founder"):
+            startup.mobs.add(user)
+        else :
+            startup.people.add(user)
         # configuring the modules 
         StrategyModule.objects.create(startup=startup)
         MarketingModule.objects.create(startup=startup)
@@ -109,7 +114,7 @@ class CreateStartupView(APIView):
         # send_invite_mails(emails)
         # send_join_mail(user.email)
 
-        return Response({"message": "done"})
+        return Response({"message": "done"}, status=status.HTTP_201_CREATED)
 
 class GetStartupsView(APIView):
     def get(self, request, format=None):
@@ -125,3 +130,31 @@ class GetStartupsView(APIView):
             'all_startups': all_startups_data
         }
         return Response(payload, status=status.HTTP_200_OK)
+
+class GetStartupView(APIView):
+    def get(self, request, format=None):
+        username = request.GET.get('username')
+        user = User.objects.get(username=username)
+        startup_key = models.request.GET.get("startup_key")
+        startup = Startup.objects.filter(people=user, key=startup_key)
+        if startup.exists():
+            startup = startup.first()
+            MarketingVolts = MarketingModule.objects.get(startup=startup).volts
+            StrategyVolts = StrategyModule.objects.get(startup=startup).volts
+            ResearchVolts = ResearchModule.objects.get(startup=startup).volts
+            ProductVolts = ProductModule.objects.get(startup=startup).volts
+            SalesVolts = SalesModule.objects.get(startup=startup).volts
+            total_points = MarketingVolts+SalesVolts+ResearchVolts+ProductVolts+StrategyVolts
+            stats = {
+                "strategy": StrategyVolts/total_points*100,
+                "marketing": MarketingVolts/total_points*100,
+                "sales": SalesVolts/total_points*100,
+                "product": ProductVolts/total_points*100,
+                "research": StrategyVolts/total_points*100,
+            }
+            payload = {
+                "details": StartupSerializer(startup).data,
+                "stats": stats,
+            }
+            return Response(payload, status=status.HTTP_200_OK)
+        return Response({"message": "not found!"}, staus=status.HTTP_404_NOT_FOUND)

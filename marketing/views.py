@@ -9,12 +9,13 @@ from .serializers import *
 class CreateMarketingView(APIView):
     def post(self, request, format=None):
         data = request.data
-        startup = request.GET.get('startup')
+        startup_key = data.get('startup_key')
+        startup = Startup.objects.get(key=startup_key)
         marketingModule = MarketingModule.objects.get(startup=startup)
+        strategy = Strategy.objects.get(strategyTitle=data.get("strategyTitle"))
         marketing = Marketing.objects.create(
-            TYPE_CHOICES = data.get("TYPE_CHOICES"),
-            SUCCESS_CHOICES = data.get("SUCCESS_CHOICES"),
-            STATUS_CHOICES = data.get("STATUS_CHOICES"),
+            marketingModule=marketingModule,
+            strategy=strategy,
             marketingTitle = data.get("marketingTitle"),
             marketingLeader = data.get("marketingLeader"),
             type = data.get("type"),
@@ -24,16 +25,31 @@ class CreateMarketingView(APIView):
             endDate = data.get("endDate"),
             success = data.get("success")
         )
-        marketing.marketingModule = marketingModule
         return Response({"message": "done"})
 
-class GetStrategyView(APIView):
+class GetMarketingStrategiesView(APIView):
     def get(self, request, format=None):
-        startup = request.GET.get('startup')
+        startup_key = data.get('startup_key')
+        startup = Startup.objects.get(key=startup_key)
         marketingModule = MarketingModule.objects.get(startup=startup)
         your_marketing = Marketing.objects.filter(marketingModule=marketingModule)
         your_marketing_data = MarketingSerializer(your_marketing, many=True).data
         payload = {
-            'your_marketing': your_marketing_data
+            'strategies': your_marketing_data
         }
         return Response(payload, status=status.HTTP_200_OK)
+
+class GetMarketingStrategyView(APIView):
+    def get(self, request, format=None):
+        slug = request.GET.get("slug")
+        marketing = Marketing.objects.filter(slug=slug)
+        if marketing.exists():
+            marketing = marketing.first()
+            linkedin, instagram, youtube = dict()
+            payload = {
+                "details": details,
+                "linkedin": linkedin,
+                "instagram": instagram,
+                "youtube": youtube
+            }
+            

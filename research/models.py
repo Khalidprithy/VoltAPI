@@ -3,6 +3,8 @@ from django.contrib import admin
 from django.contrib.auth.models import AbstractUser, User
 from backend.models import Startup, Profile
 from strategy.models import *
+import string
+import random
 # Create your models here.
 
 
@@ -10,6 +12,8 @@ from strategy.models import *
 class ResearchModule(models.Model):
     startup = models.OneToOneField(Startup, on_delete=models.CASCADE)
     additionalArticles = models.TextField(null=True, blank=True)
+    head = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
+    volts = models.IntegerField(default=0)
 
     class Meta:
         ordering = ['startup']
