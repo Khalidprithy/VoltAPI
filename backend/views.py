@@ -122,8 +122,20 @@ class GetStartupsView(APIView):
         user = User.objects.get(username=username)
         your_startups = Startup.objects.filter(people=user)
         all_startups = Startup.objects.all().exclude(people=user)
-        your_startups_data = PublicStartupSerializer(your_startups, many=True).data
-        all_startups_data = PublicStartupSerializer(all_startups, many=True).data
+        
+        your_startups_data = []
+        for startup in your_startups:
+            startup_ = {}
+            startup_['details'] = PublicStartupSerializer(startup).data
+            startup_['members'] = len(startup.people.all())
+            your_startups_data.append(startup_)
+
+        all_startups_data = []
+        for startup in all_startups:
+            startup_ = {}
+            startup_['details'] = PublicStartupSerializer(startup).data
+            startup_['members'] = len(startup.people.all())
+            all_startups_data.append(startup_) 
 
         payload = {
             'your_startups': your_startups_data,

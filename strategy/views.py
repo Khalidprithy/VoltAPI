@@ -14,7 +14,8 @@ from sales.models import *
 class CreateStrategyView(APIView):
     def post(self, request, format=None):
         data = request.data
-        startup = request.GET.get('startup')
+        startup_key = request.GET.get('startup_key')
+        startup = Startup.objects.get(key=startup_key)
         strategyModule = StrategyModule.objects.get(startup=startup)
         strategy = Strategy.objects.create(
             CATEGORY_CHOICES = data.get("CATEGORY_CHOICES"),
@@ -35,7 +36,8 @@ class CreateStrategyView(APIView):
 
 class GetStrategiesView(APIView):
     def get(self, request, format=None):
-        startup = request.GET.get('startup')
+        startup_key = request.GET.get('startup_key')
+        startup = Startup.objects.get(key=startup_key)
         strategyModule = StrategyModule.objects.get(startup=startup)
         your_strategies = Strategy.objects.filter(strategyModule=strategyModule)
         strategies_ = []
