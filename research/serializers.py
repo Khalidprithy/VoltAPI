@@ -2,18 +2,15 @@ from rest_framework import serializers
 from .models import *
 
 
-
-class ResearchSerializer(serializers.ModelSerializer):
-    id = serializers.IntegerField(read_only=True)
-
+class PublicResearchSerializer(serializers.ModelSerializer):
     class Meta:
         model = Research
-        fields = ['id', 'strategy', 'researchTitle', 'category', 'researchLeader', 'researchTask',
-                  'conclusion',
-                  'researchArtifacts']
-        read_only_fields = ['strategy', 'researchTitle', 'category', 'id']
+        exclude = ("researchModule", "marketing", "volts")
 
-    strategy = serializers.StringRelatedField(many=False, read_only=True)
+class ResearchSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Research
+        fields = "__all__"
 
 
 class ResearchModelSerializer(serializers.ModelSerializer):

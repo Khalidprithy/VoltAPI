@@ -147,7 +147,7 @@ class GetStartupView(APIView):
     def get(self, request, format=None):
         username = request.GET.get('username')
         user = User.objects.get(username=username)
-        startup_key = models.request.GET.get("startup_key")
+        startup_key = request.GET.get("startup_key")
         startup = Startup.objects.filter(people=user, key=startup_key)
         if startup.exists():
             startup = startup.first()
