@@ -28,7 +28,8 @@ class CreateProductView(APIView):
 
 class GetProductsView(APIView):
     def get(self, request, format=None):
-        startup = request.GET.get('startup')
+        startup_key = request.GET.get('startup_key')
+        startup = Startup.objects.get(key=startup_key)
         productModule = ProductModule.objects.get(startup=startup)
         your_product = Product.objects.filter(productModule=productModule)
         your_product_data = PublicProductSerializer(your_product, many=True).data

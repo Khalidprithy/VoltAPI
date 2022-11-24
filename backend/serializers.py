@@ -32,19 +32,15 @@ class PublicProfileSerializer(serializers.ModelSerializer):
 
 
 class StartupSerializer(serializers.ModelSerializer):
-    profile = ProfileSerializer(many=True, read_only=True)
-
     class Meta:
         model = Startup
         fields = "__all__"
 
 
 class PublicStartupSerializer(serializers.ModelSerializer):
-    profile = PublicProfileSerializer(many=True, read_only=True)
-
     class Meta:
         model = Startup
-        fields = ['id', 'name', 'created_at', 'points', 'idea', 'founded', 'website', 'registered', 'market']
+        fields = ['id', 'name', 'created_at', 'points', 'vision', 'founded', 'website', 'key', 'logo']
 
 
 class UpSerializer(serializers.ModelSerializer):

@@ -17,7 +17,9 @@ def generate_key():
 
 class Startup(models.Model):
     key = models.SlugField(editable=False, default=generate_key)
+    logo = models.ImageField(null=True, upload_to="startup/logo")
     name = models.CharField(max_length=255)
+    vision = models.CharField(null=True, max_length=100)
     founded = models.DateField(auto_now=False, auto_now_add=False, null=True)
     idea = models.TextField()
     problemArea = models.TextField()
