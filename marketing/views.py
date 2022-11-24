@@ -4,6 +4,8 @@ from rest_framework import status
 
 from .models import *
 from .serializers import *
+from research.serializers import *
+from research.models import *
 
 # Create your views here.
 class CreateMarketingView(APIView):
@@ -45,11 +47,15 @@ class GetMarketingStrategyView(APIView):
         marketing = Marketing.objects.filter(slug=slug)
         if marketing.exists():
             marketing = marketing.first()
-            linkedin, instagram, youtube = dict()
+            linkedin, instagram, youtube = []
+            content = PublicResearchSerializer(Research.objects.filter(marketing=marketing), many=True).data
             payload = {
                 "details": details,
                 "linkedin": linkedin,
                 "instagram": instagram,
-                "youtube": youtube
+                "youtube": youtube,
+                "content": content
             }
+            return Response(payload, status=status.HTTP_200_OK)
+        return Response({"message": "invalid slug!"}, status=status.HTTP_404_NOT_FOUND)
             
