@@ -169,4 +169,4 @@ class GetStartupView(APIView):
                 "stats": stats,
             }
             return Response(payload, status=status.HTTP_200_OK)
-        return Response({"message": "not found!"}, staus=status.HTTP_404_NOT_FOUND)
+        return Response({"message": "startup not found!"}, status=status.HTTP_404_NOT_FOUND)

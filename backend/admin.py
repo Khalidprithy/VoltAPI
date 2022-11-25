@@ -6,6 +6,8 @@ from django.contrib.auth.admin import UserAdmin
 from strategy.admin import *
 from research.admin import *
 from marketing.admin import *
+from sales.admin import *
+from product.admin import *
 
 # Register your models here.
 
@@ -29,7 +31,7 @@ class ProfileAdmin(admin.ModelAdmin):
 class BaseModelAdmin(admin.ModelAdmin):
     list_display = ['name', 'points', 'points_status', 'created_at']
     list_per_page = 15
-    inlines = [StrategyModelInline, ResearchModelInline, MarketingModelInline]
+    inlines = [StrategyModelInline, ResearchModelInline, MarketingModelInline, ProductModelInline, StrategyModelInline]
     search_fields = ['name__istartswith']
 
     @admin.display(ordering='points')
