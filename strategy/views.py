@@ -18,8 +18,7 @@ class CreateStrategyView(APIView):
         startup = Startup.objects.get(key=startup_key)
         strategyModule = StrategyModule.objects.get(startup=startup)
         strategy = Strategy.objects.create(
-            CATEGORY_CHOICES = data.get("CATEGORY_CHOICES"),
-            SUCCESS_CHOICES = data.get("SUCCESS_CHOICES"),
+            strategyModule = strategyModule,
             strategyTitle = data.get("strategyTitle"),
             strategy = data.get("strategy"),
             category = data.get("category"),
@@ -27,11 +26,12 @@ class CreateStrategyView(APIView):
             strategyLeader = data.get("strategyLeader"),
             customer = data.get("customer"),
             features = data.get("features"),
-            success = data.get("success"),
+            success_low = data.get("success_low"),
+            success_mid = data.get("success_mid"),
+            success_high = data.get("success_high"),
             problemArea = data.get("problemArea"),
             uses = data.get("uses")
         )
-        strategy.strategyModule = strategyModule
         return Response({"message": "done"})
 
 class GetStrategiesView(APIView):
@@ -39,19 +39,32 @@ class GetStrategiesView(APIView):
         startup_key = request.GET.get('startup_key')
         startup = Startup.objects.get(key=startup_key)
         strategyModule = StrategyModule.objects.get(startup=startup)
-        your_strategies = Strategy.objects.filter(strategyModule=strategyModule)
-        strategies_ = []
-        for strategy in your_strategies:
+        major_strategies = Strategy.objects.filter(strategyModule=strategyModule, category="M")
+        minor_strategies = Strategy.objects.filter(strategyModule=strategyModule, category="m")
+
+        strategies_major = []
+        for strategy in major_strategies:
             strategy_ = {}
             strategy_["details"] = StrategySerializer(strategy).data
             strategy_["subs"] = {
                 "marketing": len(Marketing.objects.filter(strategy=strategy)),
                 "sales": len(Sales.objects.filter(strategy=strategy)),
-                "research": len(Research.objects.filter(strategy=strategy))
             }
-            strategies_.append(strategy_)
+            strategies_major.append(strategy_)
+
+        strategies_minor = []
+        for strategy in minor_strategies:
+            strategy_ = {}
+            strategy_["details"] = StrategySerializer(strategy).data
+            strategy_["subs"] = {
+                "marketing": len(Marketing.objects.filter(strategy=strategy)),
+                "sales": len(Sales.objects.filter(strategy=strategy)),
+            }
+            strategies_minor.append(strategy_)
+
         payload = {
-            'your_strategies': strategies_
+            'major': strategies_major, 
+            'minor': strategies_minor
         }
         return Response(payload, status=status.HTTP_200_OK)
 
@@ -63,15 +76,13 @@ class GetStrategyView(APIView):
             strategy = strategy.first()
             marketing_sub = Marketing.objects.filter(strategy=strategy)
             sales_sub = Sales.objects.filter(strategy=strategy)
-            research_sub = Research.objects.filter(strategy=strategy)
             sub = {
                 "sales": sales_sub,
                 "marketing": marketing_sub,
-                "research": research_sub,
             }
             payload = {
                 "strategy": StrategySerializer(strategy).data,
                 "sub_strategies": sub
             }
             return Response(payload, status=status.HTTP_200_OK)
-        return Response({"message": "not found!"}, status=status.HTTP_404_NOT_FOUND)
+        return Response({"message": "strategy not found!"}, status=status.HTTP_404_NOT_FOUND)

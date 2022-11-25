@@ -36,11 +36,6 @@ class Strategy(models.Model):
         ('M', 'Major'),
         ('m', 'Minor'),
     ]
-    SUCCESS_CHOICES = [
-        ('H', 'High'),
-        ('M', 'Medium'),
-        ('L', 'Low'),
-    ]
     slug = models.SlugField(null=True, max_length=300, unique=True)
     strategyModule = models.ForeignKey(StrategyModule, on_delete=models.CASCADE, parent_link=True,
                                       related_name='strategies')
@@ -51,7 +46,9 @@ class Strategy(models.Model):
     strategyLeader = models.ForeignKey(Profile, on_delete=models.SET_NULL, null=True)
     customer = models.TextField()
     features = models.TextField()
-    success = models.CharField(choices=SUCCESS_CHOICES, max_length=1, default='L')
+    success_low = models.CharField(max_length=20, null=True)
+    success_mid = models.CharField(max_length=20, null=True)
+    success_high = models.CharField(max_length=20, null=True)
     problemArea = models.TextField()
     uses = models.TextField(null=True)
     points = models.IntegerField(default=10)
