@@ -21,6 +21,14 @@ class ResearchModule(models.Model):
     def __str__(self) -> str:
         return self.startup.name + ' Research'
 
+def generate_key():
+    length=10
+    base = string.ascii_letters+string.digits
+    while True:
+        key = ''.join(random.choices(base,k=length))
+        if not Marketing.objects.filter(key=key).exists():
+          break  
+    return key
 
 class Research(models.Model):
     CATEGORY_CHOICES = [
@@ -29,6 +37,7 @@ class Research(models.Model):
         ('V', 'Video'),
         ('R', 'Research'),
     ]
+    key = models.SlugField(editable=False, default=generate_key)
     researchModule = models.ForeignKey(ResearchModule, on_delete=models.CASCADE, related_name='researches')
     marketing = models.ForeignKey(Marketing, on_delete=models.CASCADE, null=True)
     task = models.TextField()

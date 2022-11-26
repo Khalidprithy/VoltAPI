@@ -6,25 +6,34 @@ from .models import *
 from .serializers import *
 
 # Create your views here.
-class CreateResearchView(APIView):
+class CreateResearchTaskView(APIView):
     def post(self, request, format=None):
         data = request.data
-        startup = request.GET.get('startup')
-        researchModule = ResearchModule.objects.get(startup=startup)
-        strategy = Strategy.objects.get(strategyTitle=data.get("strategyTitle"))
+        startup_key = data.get('startup_key')
+        researchModule = ResearchModule.objects.get(startup__key=startup_key)
+        if len(data.get("marketing_key"))==10:
+            marketing = Marketing.objects.get(marketing__key=data.get("marketing_key"))
+            research = Research.objects.create(
+                researchModule=researchModule,
+                marketing = marketing,
+                task = data.get("task"),
+                category = data.get("category"),
+                assigned_to = User.objects.get(username=data.get("assigned_to")),
+                deadline = data.get("deadline"),
+                volts = data.get("volts"),
+            )
+
         research = Research.objects.create(
-            strategy = strategy,
-            researchTitle = data.get("researchTitle"),
+            researchModule=researchModule,
+            task = data.get("task"),
             category = data.get("category"),
-            researchLeader = data.get("researchLeader"),
-            researchTask = data.get("researchTask"),
-            conclusion = data.get("conclusion"),
-            researchArtifacts = data.get("researchArtifacts")
+            assigned_to = User.objects.get(username=data.get("assigned_to")),
+            deadline = data.get("deadline"),
+            volts = data.get("volts"),
         )
-        research.researchModule = researchModule
         return Response({"message": "done"})
 
-class GetStrategyView(APIView):
+class GetResearchView(APIView):
     def get(self, request, format=None):
         startup = request.GET.get('startup')
         researchModule = ResearchModule.objects.get(startup=startup)

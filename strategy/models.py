@@ -59,6 +59,17 @@ class Strategy(models.Model):
     def save(self, *args, **kwargs):
         self.slug = slugify(self.strategyTitle)
         super(Strategy, self).save(*args, **kwargs)
+    
+    def is_compeleted(self) -> bool:
+        marks = Marketing.objects.filter(strategy=self)
+        sales = Sale.objects.filter(strategy=self)
+        for mark in marks:
+            if not mark.is_completed():
+                return False
+        for sale in sales:
+            if not sale.is_completed():
+                return False  
+        return True
 
 class StrategyResult(models.Model):
     SUCCESS_CHOICES = [

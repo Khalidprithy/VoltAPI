@@ -31,7 +31,7 @@ class CreateMarketingView(APIView):
 
 class GetMarketingStrategiesView(APIView):
     def get(self, request, format=None):
-        startup_key = data.get('startup_key')
+        startup_key = request.GET.get('startup_key')
         startup = Startup.objects.get(key=startup_key)
         marketingModule = MarketingModule.objects.get(startup=startup)
         your_marketing = Marketing.objects.filter(marketingModule=marketingModule)

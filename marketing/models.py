@@ -74,20 +74,32 @@ class Marketing(models.Model):
     def __str__(self) -> str:
         return self.marketingTitle
 
+    def is_completed(self) -> bool:
+        for social in Social.objects.filter(marketing=self):
+            if not social.is_completed():
+                return False
+        return True
 
 class Social(models.Model):
     STATUS_CHOICES = [
-        ('', 'Active'),
+        ('A', 'Active'),
         ('I', 'Inactive'),
     ]
     platform = models.ForeignKey(Platform, on_delete=models.CASCADE)
     marketing = models.ForeignKey(Marketing, on_delete=models.CASCADE)
-    completed = models.BooleanField(default=False)
+    # expected vs completed
+    expected_posts = models.IntegerField(default=1)
+    completed_posts = models.IntegerField(default=0)
+    # matrix
     low = models.CharField(max_length=50)
     mid = models.CharField(max_length=50)
     high = models.CharField(max_length=50)
+    # points vs alloted
     points_alloted = models.IntegerField(default=5)
     points = models.IntegerField(default=5)
 
     def __str__(self) -> str:
         return self.marketing.marketingTitle + ' Task'
+
+    def is_completed(self) -> bool:
+        return self.expected_posts==self.completed_posts
