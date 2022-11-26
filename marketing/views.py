@@ -29,15 +29,47 @@ class CreateMarketingView(APIView):
         )
         return Response({"message": "done"})
 
-class GetMarketingStrategiesView(APIView):
+def add_marketing(strategies):
+    payload = {
+        'major': [],
+        'minor': [],
+    }
+    for strategy in strategies:
+        strategy_ = {}
+        strategy_["details"] = StrategySerializer(strategy).data
+        strategy_["subs"] = {
+            "marketing": len(Marketing.objects.filter(strategy=strategy)),
+            "sales": len(Sales.objects.filter(strategy=strategy)),
+        }
+        if strategy.category=="M":
+            payload['major'].append(strategy_)
+        payload['minor'].append(strategy_)
+    return payload
+
+def get_all_marketing(startup):
+    strats = Strategy.objects.filter(strategyModule__startup=startup)
+    inprogress = []
+    completed = []
+    closed = []
+    for strat in strats:
+        if StrategyResult.objects.filter(strategy=strat).exists():
+            closed.append(strat)
+        elif strat.is_completed():
+            completed.append(strat)
+        else :
+            inprogress.append(strat)
+    return inprogress, completed, closed
+
+class GetStrategiesView(APIView):
     def get(self, request, format=None):
         startup_key = request.GET.get('startup_key')
         startup = Startup.objects.get(key=startup_key)
-        marketingModule = MarketingModule.objects.get(startup=startup)
-        your_marketing = Marketing.objects.filter(marketingModule=marketingModule)
-        your_marketing_data = MarketingSerializer(your_marketing, many=True).data
+        inprogress, completed, closed = get_all_marketing(startup)
+
         payload = {
-            'strategies': your_marketing_data
+            'inprogress': add_marketing(inprogress),
+            'completed': add_marketing(completed),
+            'closed': add_marketing(closed),
         }
         return Response(payload, status=status.HTTP_200_OK)
 

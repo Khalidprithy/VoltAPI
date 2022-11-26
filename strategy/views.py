@@ -45,6 +45,7 @@ def add_strategies(strategies):
         strategy_["subs"] = {
             "marketing": len(Marketing.objects.filter(strategy=strategy)),
             "sales": len(Sales.objects.filter(strategy=strategy)),
+            "research": len(Research.objects.filter(strategy=strategy)),
         }
         if strategy.category=="M":
             payload['major'].append(strategy_)
@@ -86,9 +87,11 @@ class GetStrategyView(APIView):
             strategy = strategy.first()
             marketing_sub = Marketing.objects.filter(strategy=strategy)
             sales_sub = Sales.objects.filter(strategy=strategy)
+            research_sub = Research.objects.filter(strategy=strategy)
             sub = {
                 "sales": sales_sub,
                 "marketing": marketing_sub,
+                "research": research_sub,
             }
             payload = {
                 "strategy": StrategySerializer(strategy).data,

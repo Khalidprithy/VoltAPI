@@ -20,7 +20,7 @@ class Startup(models.Model):
     logo = models.ImageField(null=True, upload_to="startup/logo")
     name = models.CharField(max_length=255)
     vision = models.CharField(null=True, max_length=100)
-    founded = models.DateField(auto_now=False, auto_now_add=False, null=True)
+    founded = models.CharField(null=True, max_length=50)
     idea = models.TextField()
     problemArea = models.TextField()
     currentPlayers = models.TextField()

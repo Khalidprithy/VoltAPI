@@ -39,7 +39,7 @@ class Research(models.Model):
     ]
     key = models.SlugField(editable=False, default=generate_key)
     researchModule = models.ForeignKey(ResearchModule, on_delete=models.CASCADE, related_name='researches')
-    marketing = models.ForeignKey(Marketing, on_delete=models.CASCADE, null=True)
+    strategy = models.ForeignKey(Strategy, on_delete=models.CASCADE, null=True)
     task = models.TextField()
     category = models.CharField(choices=CATEGORY_CHOICES, max_length=1, default='P')
     assigned_to = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
