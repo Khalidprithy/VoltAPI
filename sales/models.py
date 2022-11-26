@@ -49,6 +49,8 @@ class Sale(models.Model):
     def __str__(self) -> str:
         return self.salesTitle
 
+    def is_completed(self) -> bool:
+        return True
 
 class SalesTask(models.Model):
     STATUS_CHOICES = [

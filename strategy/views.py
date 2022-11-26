@@ -34,37 +34,47 @@ class CreateStrategyView(APIView):
         )
         return Response({"message": "done"})
 
+def add_strategies(strategies):
+    payload = {
+        'major': [],
+        'minor': [],
+    }
+    for strategy in strategies:
+        strategy_ = {}
+        strategy_["details"] = StrategySerializer(strategy).data
+        strategy_["subs"] = {
+            "marketing": len(Marketing.objects.filter(strategy=strategy)),
+            "sales": len(Sales.objects.filter(strategy=strategy)),
+        }
+        if strategy.category=="M":
+            payload['major'].append(strategy_)
+        payload['minor'].append(strategy_)
+    return payload
+
+def get_all_strategies(startup):
+    strats = Strategy.objects.filter(strategyModule__startup=startup)
+    inprogress = []
+    completed = []
+    closed = []
+    for strat in strats:
+        if StrategyResult.objects.filter(strategy=strat).exists():
+            closed.append(strat)
+        elif strat.is_completed():
+            completed.append(strat)
+        else :
+            inprogress.append(strat)
+    return inprogress, completed, closed
+
 class GetStrategiesView(APIView):
     def get(self, request, format=None):
         startup_key = request.GET.get('startup_key')
         startup = Startup.objects.get(key=startup_key)
-        strategyModule = StrategyModule.objects.get(startup=startup)
-        major_strategies = Strategy.objects.filter(strategyModule=strategyModule, category="M")
-        minor_strategies = Strategy.objects.filter(strategyModule=strategyModule, category="m")
-
-        strategies_major = []
-        for strategy in major_strategies:
-            strategy_ = {}
-            strategy_["details"] = StrategySerializer(strategy).data
-            strategy_["subs"] = {
-                "marketing": len(Marketing.objects.filter(strategy=strategy)),
-                "sales": len(Sales.objects.filter(strategy=strategy)),
-            }
-            strategies_major.append(strategy_)
-
-        strategies_minor = []
-        for strategy in minor_strategies:
-            strategy_ = {}
-            strategy_["details"] = StrategySerializer(strategy).data
-            strategy_["subs"] = {
-                "marketing": len(Marketing.objects.filter(strategy=strategy)),
-                "sales": len(Sales.objects.filter(strategy=strategy)),
-            }
-            strategies_minor.append(strategy_)
+        inprogress, completed, closed = get_all_strategies(startup)
 
         payload = {
-            'major': strategies_major, 
-            'minor': strategies_minor
+            'inprogress': add_strategies(inprogress),
+            'completed': add_strategies(completed),
+            'closed': add_strategies(closed),
         }
         return Response(payload, status=status.HTTP_200_OK)
 

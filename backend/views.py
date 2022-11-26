@@ -83,7 +83,9 @@ class CreateStartupView(APIView):
     def post(self, request, format=None):
         data = request.data
         username = data.get('username')
-        user = User.objects.get(username=username)
+        user = User.objects.filter(username=username)
+        if not user.exists():
+            return Response({"message": "user not found!"}, status=status.HTTP_404_NOT_FOUND)
         startup = Startup.objects.create(
             name=data.get("name"),
             founded=data.get("founded"),
