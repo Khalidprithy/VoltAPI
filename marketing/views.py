@@ -36,23 +36,24 @@ def add_marketing(strategies):
     }
     for strategy in strategies:
         strategy_ = {}
-        strategy_["details"] = StrategySerializer(strategy).data
+        strategy_["details"] = MarketingSerializer(strategy).data
         strategy_["subs"] = {
-            "marketing": len(Marketing.objects.filter(strategy=strategy)),
-            "sales": len(Sales.objects.filter(strategy=strategy)),
+            "youtube": [],
+            "instagram": [],
+            "linkedin": [],
         }
-        if strategy.category=="M":
+        if strategy.major:
             payload['major'].append(strategy_)
         payload['minor'].append(strategy_)
     return payload
 
 def get_all_marketing(startup):
-    strats = Strategy.objects.filter(strategyModule__startup=startup)
+    strats = Marketing.objects.filter(marketingModule__startup=startup)
     inprogress = []
     completed = []
     closed = []
     for strat in strats:
-        if StrategyResult.objects.filter(strategy=strat).exists():
+        if MarketingResult.objects.filter(marketing=strat).exists():
             closed.append(strat)
         elif strat.is_completed():
             completed.append(strat)
@@ -60,16 +61,20 @@ def get_all_marketing(startup):
             inprogress.append(strat)
     return inprogress, completed, closed
 
-class GetStrategiesView(APIView):
+class GetMarketingStrategiesView(APIView):
     def get(self, request, format=None):
         startup_key = request.GET.get('startup_key')
         startup = Startup.objects.get(key=startup_key)
         inprogress, completed, closed = get_all_marketing(startup)
+        tasks = [] # All socials posts
+        socials = Platform.objects.filter(marketing__startup=startup)
 
         payload = {
             'inprogress': add_marketing(inprogress),
             'completed': add_marketing(completed),
             'closed': add_marketing(closed),
+            'tasks': tasks,
+            'socials': socials
         }
         return Response(payload, status=status.HTTP_200_OK)
 

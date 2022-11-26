@@ -102,9 +102,10 @@ class CreateStartupView(APIView):
             registered=data.get("registered")
         )
         if data.get("is_founder"):
-            startup.mobs.add(user)
+            startup.mobs.add(user.first())
+            startup.people.add(user.first())
         else :
-            startup.people.add(user)
+            startup.people.add(user.first())
         # configuring the modules 
         StrategyModule.objects.create(startup=startup)
         MarketingModule.objects.create(startup=startup)
@@ -158,7 +159,7 @@ class GetStartupView(APIView):
             ResearchVolts = ResearchModule.objects.get(startup=startup).volts
             ProductVolts = ProductModule.objects.get(startup=startup).volts
             SalesVolts = SalesModule.objects.get(startup=startup).volts
-            total_points = MarketingVolts+SalesVolts+ResearchVolts+ProductVolts+StrategyVolts
+            total_points = 1 if (MarketingVolts+SalesVolts+ResearchVolts+ProductVolts+StrategyVolts)==0 else (MarketingVolts+SalesVolts+ResearchVolts+ProductVolts+StrategyVolts)
             stats = {
                 "strategy": StrategyVolts/total_points*100,
                 "marketing": MarketingVolts/total_points*100,
