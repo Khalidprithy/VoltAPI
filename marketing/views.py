@@ -27,7 +27,23 @@ class CreateMarketingView(APIView):
             endDate = data.get("endDate"),
             success = data.get("success")
         )
+        for platform in Platform.objects.filter(marketing=marketingModule):
+            Social.objects.create(marketing=marketing, platform=platform)
         return Response({"message": "done"})
+
+def SetSocialGoalsView(APIView):
+    def post(self, request, format=None):
+        data = request.data
+        marketing_key = data.get('marketing_key')
+        for social in Social.objects.filter(marketing__key=marketing_key):
+            social_data = data.get(social.platform.media)
+            social.expected_posts = social_data.get('expected_posts')
+            social.low = social_data.get('low')
+            social.mid = social_data.get('mid')
+            social.high = social_data.get('high')
+            social.points = social_data.get('points')
+            social.save(update_fields=['expected_posts', 'low', 'mid', 'high', 'points'])
+        return Response({"message": "socials updated!"}, status=status.HTTP_200_OK)
 
 def add_marketing(strategies):
     payload = {
@@ -51,28 +67,24 @@ def get_all_marketing(startup):
     strats = Marketing.objects.filter(marketingModule__startup=startup)
     inprogress = []
     completed = []
-    closed = []
     for strat in strats:
-        if MarketingResult.objects.filter(marketing=strat).exists():
-            closed.append(strat)
-        elif strat.is_completed():
+        if strat.is_completed():
             completed.append(strat)
         else :
             inprogress.append(strat)
-    return inprogress, completed, closed
+    return inprogress, completed
 
 class GetMarketingStrategiesView(APIView):
     def get(self, request, format=None):
         startup_key = request.GET.get('startup_key')
         startup = Startup.objects.get(key=startup_key)
-        inprogress, completed, closed = get_all_marketing(startup)
+        inprogress, completed = get_all_marketing(startup)
         tasks = [] # All socials posts
         socials = Platform.objects.filter(marketing__startup=startup)
 
         payload = {
             'inprogress': add_marketing(inprogress),
             'completed': add_marketing(completed),
-            'closed': add_marketing(closed),
             'tasks': tasks,
             'socials': socials
         }
@@ -85,7 +97,7 @@ class GetMarketingStrategyView(APIView):
         if marketing.exists():
             marketing = marketing.first()
             linkedin, instagram, youtube = []
-            content = PublicResearchSerializer(Research.objects.filter(marketing=marketing), many=True).data
+            content = PublicResearchSerializer(Research.objects.filter(strategy=marketing.strategy), many=True).data
             payload = {
                 "details": details,
                 "linkedin": linkedin,

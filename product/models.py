@@ -50,14 +50,14 @@ class Product(models.Model):
     key = models.SlugField(editable=False, default=generate_key)
     productModule = models.ForeignKey(ProductModule, on_delete=models.CASCADE, related_name='products', null=True)
     productLeader = models.ForeignKey(User, on_delete=models.CASCADE, related_name='leader', null=True)
-    name = models.CharField(max_length=50)
-    desc = models.TextField()
+    name = models.CharField(max_length=50, unique=True)
+    desc = models.TextField(unique=True)
     platform = models.CharField(choices=PLATFORM_CHOICES, max_length=50, null=True)
     phase = models.CharField(choices=PHASE_CHOICES, max_length=50)
     keyword = models.CharField(choices=KEYWORD_CHOICES, max_length=50, null=True)
     completed = models.BooleanField(default=False)
     version = models.CharField(max_length=50, default="0.0.1")
-    deployed_link = models.URLField(null=True, blank=True, max_length=200)
+    deployed_link = models.URLField(null=True, blank=True, max_length=200, unique=True)
 
     def __str__(self) -> str:
         return self.name + " by " + self.productModule.startup.name + ("Completed" if self.completed else "")

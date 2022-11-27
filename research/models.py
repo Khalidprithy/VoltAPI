@@ -6,6 +6,7 @@ from strategy.models import *
 from marketing.models import *
 import string
 import random
+from ckeditor.fields import RichTextField
 # Create your models here.
 
 
@@ -37,18 +38,23 @@ class Research(models.Model):
         ('V', 'Video'),
         ('R', 'Research'),
     ]
+    STATUS_CHOICES = [
+        ('C', 'Completed'),
+        ('D', 'Draft'),
+        ('T', 'Task')
+    ]
     key = models.SlugField(editable=False, default=generate_key)
     researchModule = models.ForeignKey(ResearchModule, on_delete=models.CASCADE, related_name='researches')
     strategy = models.ForeignKey(Strategy, on_delete=models.CASCADE, null=True)
-    task = models.TextField()
+    task = models.TextField(unique=True)
     category = models.CharField(choices=CATEGORY_CHOICES, max_length=1, default='P')
     assigned_to = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     deadline = models.DateField(auto_now=False, auto_now_add=False, null=True)
-    conclusion = models.TextField()
+    conclusion = RichTextField(null=True)
     img = models.ImageField(null=True, upload_to="startup/content/img")
     video = models.FileField(upload_to="startup/content/video", null=True)
     volts = models.IntegerField(default=5)
-    completed = models.BooleanField(default=False)
+    status = models.CharField(choices=STATUS_CHOICES, max_length=50, default='T')
 
     def __str__(self) -> str:
         return self.task

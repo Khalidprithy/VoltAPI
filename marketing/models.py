@@ -80,22 +80,6 @@ class Marketing(models.Model):
                 return False
         return True
 
-class MarketingResult(models.Model):
-    SUCCESS_CHOICES = [
-        ('H', 'High'),
-        ('M', 'Medium'),
-        ('L', 'Low'),
-    ]
-    marketing = models.ForeignKey(Marketing, on_delete=models.CASCADE)
-    remarks = models.TextField()
-    matrix_met = models.CharField(choices=SUCCESS_CHOICES, max_length=1, default='L')
-    report = models.FileField(upload_to=None, null=True, blank=True)
-    points_alloted = models.IntegerField(default=10)
-    confirmed = models.BooleanField(default=False)
-
-    def __str__(self) -> str:
-        return self.marketing.MarketingTitle + ' Marketing' + [' Confirmed', ' Under review'][self.confirmed]
-
 class Social(models.Model):
     STATUS_CHOICES = [
         ('A', 'Active'),
