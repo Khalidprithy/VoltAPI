@@ -5,13 +5,17 @@ from .models import *
 class PublicResearchSerializer(serializers.ModelSerializer):
     class Meta:
         model = Research
-        exclude = ("researchModule", "marketing", "volts")
+        exclude = ("researchModule", "strategy", 'video', 'img', 'conclusion', 'status')
 
 class ResearchSerializer(serializers.ModelSerializer):
     class Meta:
         model = Research
         fields = "__all__"
 
+class ContentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Research
+        exclude = ("researchModule", "strategy", 'status')
 
 class ResearchModelSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField(read_only=True)

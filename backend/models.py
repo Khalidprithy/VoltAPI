@@ -18,10 +18,10 @@ def generate_key():
 class Startup(models.Model):
     key = models.SlugField(editable=False, default=generate_key)
     logo = models.ImageField(null=True, upload_to="startup/logo")
-    name = models.CharField(max_length=255)
-    vision = models.CharField(null=True, max_length=100)
+    name = models.CharField(max_length=255, unique=True)
+    vision = models.CharField(null=True, max_length=100, unique=True)
     founded = models.CharField(null=True, max_length=50)
-    idea = models.TextField()
+    idea = models.TextField(unique=True)
     problemArea = models.TextField()
     currentPlayers = models.TextField()
     difference = models.TextField()
