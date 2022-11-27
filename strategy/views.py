@@ -14,23 +14,21 @@ from sales.models import *
 class CreateStrategyView(APIView):
     def post(self, request, format=None):
         data = request.data
-        startup_key = request.GET.get('startup_key')
+        startup_key = data.get('startup_key')
         startup = Startup.objects.get(key=startup_key)
         strategyModule = StrategyModule.objects.get(startup=startup)
+        category = 'M' if data.get("category") else 'm'
         strategy = Strategy.objects.create(
             strategyModule = strategyModule,
             strategyTitle = data.get("strategyTitle"),
             strategy = data.get("strategy"),
-            category = data.get("category"),
+            category = category,
             approxStartDate = data.get("approxStartDate"),
             strategyLeader = data.get("strategyLeader"),
             customer = data.get("customer"),
-            features = data.get("features"),
             success_low = data.get("success_low"),
             success_mid = data.get("success_mid"),
             success_high = data.get("success_high"),
-            problemArea = data.get("problemArea"),
-            uses = data.get("uses")
         )
         return Response({"message": "done"})
 

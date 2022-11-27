@@ -45,12 +45,9 @@ class Strategy(models.Model):
     approxStartDate = models.DateField()
     strategyLeader = models.ForeignKey(Profile, on_delete=models.SET_NULL, null=True)
     customer = models.TextField()
-    features = models.TextField()
     success_low = models.CharField(max_length=20, null=True)
     success_mid = models.CharField(max_length=20, null=True)
     success_high = models.CharField(max_length=20, null=True)
-    problemArea = models.TextField()
-    uses = models.TextField(null=True)
     points = models.IntegerField(default=10)
 
     def __str__(self) -> str:

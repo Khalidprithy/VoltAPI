@@ -160,6 +160,7 @@ class GetStartupView(APIView):
             ProductVolts = ProductModule.objects.get(startup=startup).volts
             SalesVolts = SalesModule.objects.get(startup=startup).volts
             total_points =  1 if (MarketingVolts+SalesVolts+ResearchVolts+ProductVolts+StrategyVolts) == 0  else (MarketingVolts+SalesVolts+ResearchVolts+ProductVolts+StrategyVolts)
+
             stats = {
                 "strategy": StrategyVolts/total_points*100,
                 "marketing": MarketingVolts/total_points*100,
