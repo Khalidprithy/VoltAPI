@@ -113,7 +113,7 @@ class CreateStartupView(APIView):
         SalesModule.objects.create(startup=startup)
         ProductModule.objects.create(startup=startup)
 
-        emails = data.get('emails').split(',')
+        # emails = data.get('emails').split(',')
         # send_invite_mails(emails)
         # send_join_mail(user.email)
 
@@ -159,7 +159,8 @@ class GetStartupView(APIView):
             ResearchVolts = ResearchModule.objects.get(startup=startup).volts
             ProductVolts = ProductModule.objects.get(startup=startup).volts
             SalesVolts = SalesModule.objects.get(startup=startup).volts
-            total_points = 1 if (MarketingVolts+SalesVolts+ResearchVolts+ProductVolts+StrategyVolts)==0 else (MarketingVolts+SalesVolts+ResearchVolts+ProductVolts+StrategyVolts)
+            total_points =  1 if (MarketingVolts+SalesVolts+ResearchVolts+ProductVolts+StrategyVolts) == 0  else (MarketingVolts+SalesVolts+ResearchVolts+ProductVolts+StrategyVolts)
+
             stats = {
                 "strategy": StrategyVolts/total_points*100,
                 "marketing": MarketingVolts/total_points*100,
