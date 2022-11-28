@@ -18,9 +18,9 @@ class CreateMarketingView(APIView):
         strategy = Strategy.objects.get(slug=data.get("strategy_slug"))
         leader = User.objects.get(username=data.get("marketingLeader"))
 
-        startDate = datetime.strptime(data.get("startDate"), '%Y-%m-%d %H:%M:%S').date()
-        endDate = datetime.strptime(data.get("endDate"), '%Y-%m-%d %H:%M:%S').date()
-        
+        startDate = datetime.strptime(data.get("startDate"), '%Y-%m-%d').date()
+        endDate = datetime.strptime(data.get("endDate"), '%Y-%m-%d').date()
+
         marketing = Marketing.objects.create(
             marketingModule=marketingModule,
             strategy=strategy,
