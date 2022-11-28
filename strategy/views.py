@@ -10,6 +10,10 @@ from research.models import *
 from sales.models import *
 from backend.serializers import UserSerializer
 
+from sales.serializers import SaleSerializer
+from research.serializers import ResearchSerializer
+from marketing.serializers import MarketingSerializer
+from backend.serializers import UserSerializer
 
 # Create your views here.
 
@@ -28,13 +32,14 @@ class CreateStrategyView(APIView):
         startup_key = data.get('startup_key')
         startup = Startup.objects.get(key=startup_key)
         strategyModule = StrategyModule.objects.get(startup=startup)
+        leader = User.objects.get(username=data.get("strategyLeader"))
         strategy = Strategy.objects.create(
             strategyModule = strategyModule,
             strategyTitle = data.get("strategyTitle"),
             strategy = data.get("strategy"),
             category = data.get("category"),
             approxStartDate = data.get("approxStartDate"),
-            strategyLeader = data.get("strategyLeader"),
+            strategyLeader = leader,
             customer = data.get("customer"),
             success_low = data.get("success_low"),
             success_mid = data.get("success_mid"),
@@ -93,9 +98,9 @@ class GetStrategyView(APIView):
         strategy = Strategy.objects.filter(slug=slug)
         if strategy.exists():
             strategy = strategy.first()
-            marketing_sub = Marketing.objects.filter(strategy=strategy)
-            sales_sub = Sales.objects.filter(strategy=strategy)
-            research_sub = Research.objects.filter(strategy=strategy)
+            marketing_sub = MarketingSerializer(Marketing.objects.filter(strategy=strategy)).data
+            sales_sub = SaleSerializer(Sales.objects.filter(strategy=strategy)).data
+            research_sub = ResearchSerializer(Research.objects.filter(strategy=strategy)).data
             sub = {
                 "sales": sales_sub,
                 "marketing": marketing_sub,
