@@ -8,6 +8,7 @@ from marketing.models import *
 from strategy.models import *
 from research.models import *
 from sales.models import *
+from backend.serializers import UserSerializer
 
 
 # Create your views here.
@@ -15,9 +16,9 @@ from sales.models import *
 class GetTeamMembers(APIView):
     def get(self, request, format=None):
         key = request.GET.get('startup_key')
-        startup = Startup.objects.filter(key=key)
+        startup = Startup.objects.get(key=key)
         payload = {
-            'members': startup.people.all(),
+            'members': UserSerializer(startup.people.all(), many=True).data,
         }
         return Response(payload, status=status.HTTP_200_OK)
 
