@@ -14,6 +14,7 @@ from sales.serializers import SaleSerializer
 from research.serializers import ResearchSerializer
 from marketing.serializers import MarketingSerializer
 from backend.serializers import UserSerializer
+from datetime import datetime
 
 # Create your views here.
 
@@ -33,12 +34,15 @@ class CreateStrategyView(APIView):
         startup = Startup.objects.get(key=startup_key)
         strategyModule = StrategyModule.objects.get(startup=startup)
         leader = User.objects.get(username=data.get("strategyLeader"))
+
+        approxStartDate = datetime.strptime(data.get("approxStartDate"), '%Y-%m-%d %H:%M:%S').date()
+
         strategy = Strategy.objects.create(
             strategyModule = strategyModule,
             strategyTitle = data.get("strategyTitle"),
             strategy = data.get("strategy"),
             category = data.get("category"),
-            approxStartDate = data.get("approxStartDate"),
+            approxStartDate = approxStartDate,
             strategyLeader = leader,
             customer = data.get("customer"),
             success_low = data.get("success_low"),
