@@ -68,6 +68,17 @@ def add_strategies(strategies):
         payload['minor'].append(strategy_)
     return payload
 
+def is_completed(obj) -> bool:
+    marks = Marketing.objects.filter(strategy=obj)
+    sales = Sale.objects.filter(strategy=obj)
+    for mark in marks:
+        if not mark.is_completed():
+            return False
+    for sale in sales:
+        if not sale.is_completed():
+            return False  
+    return True
+
 def get_all_strategies(startup):
     strats = Strategy.objects.filter(strategyModule__startup=startup)
     inprogress = []
@@ -76,7 +87,7 @@ def get_all_strategies(startup):
     for strat in strats:
         if StrategyResult.objects.filter(strategy=strat).exists():
             closed.append(strat)
-        elif strat.is_completed():
+        elif is_completed(strat):
             completed.append(strat)
         else :
             inprogress.append(strat)
