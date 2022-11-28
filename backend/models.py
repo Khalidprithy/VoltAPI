@@ -10,8 +10,7 @@ def generate_key():
     base = string.ascii_letters+string.digits
     while True:
         key = ''.join(random.choices(base,k=length))
-        if not Startup.objects.filter(key=key).exists():
-          break  
+        break  
     return key
 
 

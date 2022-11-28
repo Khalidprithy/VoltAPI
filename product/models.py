@@ -19,8 +19,7 @@ def generate_key():
     base = string.ascii_letters+string.digits
     while True:
         key = ''.join(random.choices(base,k=length))
-        if not Product.objects.filter(key=key).exists():
-          break  
+        break  
     return key
 
 class Product(models.Model):
@@ -67,8 +66,7 @@ def generate_feature_key():
     base = string.ascii_letters+string.digits
     while True:
         key = ''.join(random.choices(base,k=length))
-        if not Feature.objects.filter(key=key).exists():
-          break  
+        break  
     return key
 
 class Feature(models.Model):
