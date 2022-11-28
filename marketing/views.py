@@ -6,6 +6,7 @@ from .models import *
 from .serializers import *
 from research.serializers import *
 from research.models import *
+from datetime import datetime
 
 # Create your views here.
 class CreateMarketingView(APIView):
@@ -14,18 +15,22 @@ class CreateMarketingView(APIView):
         startup_key = data.get('startup_key')
         startup = Startup.objects.get(key=startup_key)
         marketingModule = MarketingModule.objects.get(startup=startup)
-        strategy = Strategy.objects.get(strategyTitle=data.get("strategyTitle"))
+        strategy = Strategy.objects.get(slug=data.get("strategy_slug"))
+        leader = User.objects.get(username=data.get("marketingLeader"))
+
+        startDate = datetime.strptime(data.get("startDate"), '%Y-%m-%d %H:%M:%S').date()
+        endDate = datetime.strptime(data.get("endDate"), '%Y-%m-%d %H:%M:%S').date()
+        
         marketing = Marketing.objects.create(
             marketingModule=marketingModule,
             strategy=strategy,
             marketingTitle = data.get("marketingTitle"),
-            marketingLeader = data.get("marketingLeader"),
-            type = data.get("type"),
+            marketingLeader = leader,
+            major = data.get("major"),
             status = data.get("status"),
             description = data.get("description"),
-            startDate = data.get("startDate"),
-            endDate = data.get("endDate"),
-            success = data.get("success")
+            startDate = startDate,
+            endDate = endDate,
         )
         for platform in Platform.objects.filter(marketing=marketingModule):
             Social.objects.create(marketing=marketing, platform=platform)
