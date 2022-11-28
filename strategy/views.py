@@ -34,14 +34,14 @@ class CreateStrategyView(APIView):
         strategyModule = StrategyModule.objects.get(startup=startup)
         leader = User.objects.get(username=data.get("strategyLeader"))
 
-        approxStartDate = datetime.strptime(data.get("approxStartDate"), '%Y-%m-%d %H:%M:%S').date()
+        #approxStartDate = datetime.strptime(data.get("approxStartDate"), '%Y-%m-%d').date()
 
         strategy = Strategy.objects.create(
             strategyModule = strategyModule,
             strategyTitle = data.get("strategyTitle"),
             strategy = data.get("strategy"),
             category = data.get("category"),
-            approxStartDate = approxStartDate,
+            approxStartDate = data.get("approxStartDate"),
             strategyLeader = leader,
             customer = data.get("customer"),
             success_low = data.get("success_low"),
