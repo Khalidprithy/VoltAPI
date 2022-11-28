@@ -11,18 +11,27 @@ from sales.models import *
 
 
 # Create your views here.
+
+class GetTeamMembers(APIView):
+    def get(self, request, format=None):
+        key = request.GET.get('startup_key')
+        startup = Startup.objects.filter(key=key)
+        payload = {
+            'members': startup.people.all(),
+        }
+        return Response(payload, status=status.HTTP_200_OK)
+
 class CreateStrategyView(APIView):
     def post(self, request, format=None):
         data = request.data
         startup_key = data.get('startup_key')
         startup = Startup.objects.get(key=startup_key)
         strategyModule = StrategyModule.objects.get(startup=startup)
-        category = 'M' if data.get("category") else 'm'
         strategy = Strategy.objects.create(
             strategyModule = strategyModule,
             strategyTitle = data.get("strategyTitle"),
             strategy = data.get("strategy"),
-            category = category,
+            category = data.get("category"),
             approxStartDate = data.get("approxStartDate"),
             strategyLeader = data.get("strategyLeader"),
             customer = data.get("customer"),
@@ -30,7 +39,7 @@ class CreateStrategyView(APIView):
             success_mid = data.get("success_mid"),
             success_high = data.get("success_high"),
         )
-        return Response({"message": "done"})
+        return Response({"message": "done"}, status=status.HTTP_201_CREATED)
 
 def add_strategies(strategies):
     payload = {

@@ -14,7 +14,6 @@ def generate_key():
           break  
     return key
 
-
 class Startup(models.Model):
     key = models.SlugField(editable=False, default=generate_key)
     logo = models.ImageField(null=True, upload_to="startup/logo")
@@ -42,6 +41,27 @@ class Startup(models.Model):
 
     def __str__(self) -> str:
         return self.name
+
+def generate_idea_key():
+    length=10
+    base = string.ascii_letters+string.digits
+    while True:
+        key = ''.join(random.choices(base,k=length))
+        if not Startup.objects.filter(key=key).exists():
+          break  
+    return key
+
+class Idea(models.Model):
+    key = models.SlugField(default=generate_idea_key, editable=False, null=False)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="user")
+    idea = models.TextField(null=False, unique=True)
+    starred = models.BooleanField(default=False)
+    public = models.BooleanField(default=False)
+    support = models.IntegerField(default=1)
+    want_to_work = models.ManyToManyField(User, related_name="want_to_work")
+
+    def __str__(self):
+        return self.idea
 
 class Profile(models.Model):
     GENDER_CHOICES = [

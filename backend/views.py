@@ -123,6 +123,7 @@ class GetStartupsView(APIView):
     def get(self, request, format=None):
         username = request.GET.get('username')
         user = User.objects.get(username=username)
+        ideas = IdeaSerializer(Idea.objects.filter(user=user), many=True).data
         your_startups = Startup.objects.filter(people=user)
         all_startups = Startup.objects.all().exclude(people=user)
         
@@ -142,7 +143,8 @@ class GetStartupsView(APIView):
 
         payload = {
             'your_startups': your_startups_data,
-            'all_startups': all_startups_data
+            'all_startups': all_startups_data,
+            'ideas': ideas
         }
         return Response(payload, status=status.HTTP_200_OK)
 
@@ -173,3 +175,36 @@ class GetStartupView(APIView):
             }
             return Response(payload, status=status.HTTP_200_OK)
         return Response({"message": "startup not found!"}, status=status.HTTP_404_NOT_FOUND)
+
+class CreateIdeaView(APIView):
+    def post(self, request, format=None):
+        data = request.data
+        Idea.objects.create(
+            user = User.objects.get(username=data.get('username')),
+            idea = data.get('idea'),
+            public = data.get('public')
+        )
+        return Response({}, status=status.HTTP_201_CREATED)
+
+class SupportIdeaView(APIView):
+    def get(self, request, format=None):
+        idea_key = request.GET.get('idea_key')
+        idea = Idea.objects.get(key=idea_key)
+        idea.support += 1
+        idea.save(update_fields=['support'])
+        return Response({}, status=status.HTTP_200_OK)
+    
+    def post(self, request, format=None):
+        data = request.data
+        idea_key = data.get('idea_key')
+        username = data.get('username')
+        user = User.objects.get(username=username)
+        idea = Idea.objects.get(key=idea_key)
+        idea.support += 1
+        idea.want_to_work.add(user)
+        idea.save(update_fields=['support', 'want_to_work'])
+        return Response({}, status=status.HTTP_200_OK)
+
+class StarIdeaView(APIView):
+    def get(self, request, format=None):
+        pass
