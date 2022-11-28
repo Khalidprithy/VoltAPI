@@ -19,5 +19,6 @@ class StrategyModel(admin.ModelAdmin):
     model = StrategyModule
     list_display = ['startup']
     list_per_page = 15
+    inlines = [StrategyInline]
     search_fields = ['startup__name__istartswith']
 
