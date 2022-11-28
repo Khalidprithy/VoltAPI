@@ -42,6 +42,10 @@ class PublicStartupSerializer(serializers.ModelSerializer):
         model = Startup
         fields = ['id', 'name', 'created_at', 'points', 'vision', 'founded', 'website', 'key', 'logo']
 
+class IdeaSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Idea
+        fields = '__all__'
 
 class UpSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField(required=False)

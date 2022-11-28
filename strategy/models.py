@@ -27,8 +27,7 @@ def generate_key():
     base = string.ascii_letters+string.digits
     while True:
         key = ''.join(random.choices(base,k=length))
-        if not Startup.objects.filter(key=key).exists():
-          break  
+        break  
     return key 
 
 class Strategy(models.Model):
@@ -43,7 +42,7 @@ class Strategy(models.Model):
     strategy = models.TextField(null=True)
     category = models.CharField(choices=CATEGORY_CHOICES, max_length=1, default='M')
     approxStartDate = models.DateField()
-    strategyLeader = models.ForeignKey(Profile, on_delete=models.SET_NULL, null=True)
+    strategyLeader = models.ForeignKey(User, on_delete=models.DO_NOTHING, null=True)
     customer = models.TextField()
     success_low = models.CharField(max_length=20, null=True)
     success_mid = models.CharField(max_length=20, null=True)
