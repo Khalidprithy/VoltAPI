@@ -58,7 +58,7 @@ def add_strategies(strategies):
     }
     for strategy in strategies:
         strategy_ = {}
-        strategy_["details"] = StrategySerializer(strategy).data
+        strategy_["details"] = PublicStrategySerializer(strategy).data
         strategy_["subs"] = {
             "marketing": len(Marketing.objects.filter(strategy=strategy)),
             "sales": len(Sales.objects.filter(strategy=strategy)),
