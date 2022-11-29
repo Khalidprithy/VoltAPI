@@ -60,7 +60,7 @@ def add_strategies(strategies):
         strategy_["details"] = PublicStrategySerializer(strategy).data
         strategy_["subs"] = {
             "marketing": len(Marketing.objects.filter(strategy=strategy)),
-            "sales": len(Sales.objects.filter(strategy=strategy)),
+            "sales": len(Sale.objects.filter(strategy=strategy)),
             "research": len(Research.objects.filter(strategy=strategy)),
         }
         if strategy.category=="M":
@@ -113,7 +113,7 @@ class GetStrategyView(APIView):
         if strategy.exists():
             strategy = strategy.first()
             marketing_sub = MarketingSerializer(Marketing.objects.filter(strategy=strategy)).data
-            sales_sub = SaleSerializer(Sales.objects.filter(strategy=strategy)).data
+            sales_sub = SaleSerializer(Sale.objects.filter(strategy=strategy)).data
             research_sub = ResearchSerializer(Research.objects.filter(strategy=strategy)).data
             sub = {
                 "sales": sales_sub,
