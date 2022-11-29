@@ -2,12 +2,16 @@ from rest_framework import serializers
 from .models import *
 
 
-
+class PublicStrategySerializer(serializers.ModelSerializer):
+    strategyLeader = serializers.SlugRelatedField(slug_field="username", read_only=True)
+    class Meta:
+        model = Strategy
+        fields = ['slug', 'strategyTitle','approxStartDate','strategyLeader','points']
 
 class StrategySerializer(serializers.ModelSerializer):
     class Meta:
         model = Strategy
-        fields = ['id', 'strategy', 'category', 'approxStartDate', 'strategyLeader', 'Customer', 'features',
+        fields = ['id', 'strategy', 'category', 'approxStartDate', 'strategyLeader', 'customer', 'features',
                   'description', 'success']
 
 
