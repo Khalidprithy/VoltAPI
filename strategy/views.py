@@ -113,9 +113,9 @@ class GetStrategyView(APIView):
         strategy = Strategy.objects.filter(slug=slug)
         if strategy.exists():
             strategy = strategy.first()
-            marketing_sub = MarketingSerializer(Marketing.objects.filter(strategy=strategy)).data
-            sales_sub = SaleSerializer(Sale.objects.filter(strategy=strategy)).data
-            research_sub = ResearchSerializer(Research.objects.filter(strategy=strategy)).data
+            marketing_sub = MarketingSerializer(Marketing.objects.filter(strategy=strategy), many=True).data
+            sales_sub = SaleSerializer(Sale.objects.filter(strategy=strategy), many=True).data
+            research_sub = ResearchSerializer(Research.objects.filter(strategy=strategy), many=True).data
             sub = {
                 "sales": sales_sub,
                 "marketing": marketing_sub,
