@@ -9,9 +9,10 @@ class PublicStrategySerializer(serializers.ModelSerializer):
         fields = ['slug', 'strategyTitle','approxStartDate','strategyLeader','points']
 
 class StrategySerializer(serializers.ModelSerializer):
+    strategyLeader = serializers.SlugRelatedField(slug_field="username", read_only=True)
     class Meta:
         model = Strategy
-        fields = ['slug', 'strategy', 'category', 'approxStartDate', 'strategyLeader', 'customer','description','strategyTitle']
+        fields = "__all__"
 
 
 class StrategyModuleSerializer(serializers.ModelSerializer):
