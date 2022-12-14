@@ -8,6 +8,7 @@ from marketing.models import *
 from strategy.models import *
 from research.models import *
 from sales.models import *
+from backend.serializers import UserSerializer
 
 from sales.serializers import SaleSerializer
 from research.serializers import ResearchSerializer
